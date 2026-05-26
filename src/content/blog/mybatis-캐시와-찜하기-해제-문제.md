@@ -1,6 +1,6 @@
 ---
 title: "MyBatis 캐시와 찜하기 해제 문제"
-pubDate: 2026-05-26
+pubDate: 2025-02-06
 description: "찜하기 해제 후 상품 조회 API에서 wishYn이 약 1분간 1로 반환되는 현상을 MyBatis 캐시 구조와 함께 분석하고 해결한 과정을 기록합니다."
 tags: ["mybatis", "cache", "java", "backend", "troubleshooting"]
 heroImage: ""
