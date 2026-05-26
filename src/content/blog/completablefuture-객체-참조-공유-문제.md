@@ -2,6 +2,7 @@
 title: "CompletableFuture에서 객체 참조 공유로 인한 데이터 오염 해결하기"
 pubDate: 2025-09-07
 description: "여러 Future에서 같은 객체 인스턴스를 공유하다 발생한 데이터 정합성 문제를 깊은 복사(Deep Copy)로 해결한 과정을 기록합니다."
+series: "Redis 프로젝트 회고"
 tags: ["java", "concurrency", "completablefuture", "deep-copy", "backend"]
 heroImage: ""
 ---

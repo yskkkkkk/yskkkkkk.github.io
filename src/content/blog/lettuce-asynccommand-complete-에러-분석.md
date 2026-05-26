@@ -2,6 +2,7 @@
 title: "Lettuce AsyncCommand.complete() 에러 분석과 mget 체인 단순화"
 pubDate: 2025-09-05
 description: "RedisFuture를 toCompletableFuture()로 브리지한 mget 비동기 체인에서 간헐적으로 발생한 complete() 예외를 분석하고, 브리지 제거와 명시적 타임아웃 처리로 해결한 과정을 기록합니다."
+series: "Redis 프로젝트 회고"
 tags: ["redis", "lettuce", "java", "concurrency", "backend", "debugging"]
 heroImage: ""
 ---

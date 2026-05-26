@@ -2,6 +2,7 @@
 title: "Redis WarmUp 개선과 TTL 다층화로 초반 응답 지연 줄이기"
 pubDate: 2025-09-03
 description: "캐시가 있음에도 초반 요청이 느린 아이러니를 WarmUp 비동기화, optionTTL 세분화, fastExpire 연계로 해결한 과정을 기록합니다."
+series: "Redis 프로젝트 회고"
 tags: ["redis", "cache", "java", "spring", "backend", "performance"]
 heroImage: ""
 ---

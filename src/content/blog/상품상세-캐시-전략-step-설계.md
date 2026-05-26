@@ -2,6 +2,7 @@
 title: "상품 상세 페이지 캐시 전략 — STEP 기반 DB·캐시 혼합 설계"
 pubDate: 2025-09-14
 description: "개인화와 실시간성이 필요한 상품 상세 페이지에 풀 캐싱을 적용할 수 없는 이유를 분석하고, 데이터 성격에 따라 DB와 Redis를 혼합하는 STEP 기반 설계로 해결한 과정을 기록합니다."
+series: "Redis 프로젝트 회고"
 tags: ["redis", "cache", "java", "backend", "architecture", "performance"]
 heroImage: ""
 ---

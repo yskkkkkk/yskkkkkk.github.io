@@ -2,6 +2,7 @@
 title: "Redis 캐시 적재 중 NPE와 캐스팅 에러 방어하기"
 pubDate: 2025-09-04
 description: "외부 API에서 bnrSeq가 누락되거나 타입이 섞여 들어오는 케이스를 instanceof 타입 가드와 방어 로직으로 안전하게 처리한 과정을 기록합니다."
+series: "Redis 프로젝트 회고"
 tags: ["redis", "cache", "java", "backend", "defensive-programming"]
 heroImage: ""
 ---

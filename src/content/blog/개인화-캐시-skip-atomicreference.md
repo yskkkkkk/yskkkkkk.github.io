@@ -2,6 +2,7 @@
 title: "개인화 추천 모듈의 Redis 캐시 skip을 AtomicReference로 동적 관리하기"
 pubDate: 2025-09-10
 description: "shopCode 기반 정적 properties 관리의 한계를 넘어, moduleCd와 Redis 헬스 응답을 기반으로 캐시 적용 여부를 런타임에 동적으로 판별하도록 개선한 과정을 기록합니다."
+series: "Redis 프로젝트 회고"
 tags: ["redis", "java", "concurrency", "atomicreference", "backend", "personalization"]
 heroImage: ""
 ---

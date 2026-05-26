@@ -2,6 +2,7 @@
 title: "Redis 키 네이밍 파편화 해결기"
 pubDate: 2025-09-01
 description: "여기저기서 다른 규칙으로 만들어지던 Redis 키를 단일 진입점으로 강제해 정규화한 과정을 기록합니다."
+series: "Redis 프로젝트 회고"
 tags: ["redis", "cache", "java", "backend", "refactoring"]
 heroImage: ""
 ---

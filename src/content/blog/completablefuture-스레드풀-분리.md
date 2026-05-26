@@ -2,6 +2,7 @@
 title: "CompletableFuture 스레드풀 분리로 pool starvation 해결하기"
 pubDate: 2025-09-02
 description: "ForkJoinPool.commonPool에 블로킹 I/O를 태워 발생한 스레드풀 고갈 현상을 CPU/IO 실행기 분리로 해결한 과정을 기록합니다."
+series: "Redis 프로젝트 회고"
 tags: ["java", "concurrency", "completablefuture", "spring", "backend", "performance"]
 heroImage: ""
 ---

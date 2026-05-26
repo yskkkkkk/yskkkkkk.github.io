@@ -2,6 +2,7 @@
 title: "멀티 인스턴스 환경에서 Caffeine + Redis 캐시 동기화하기 (Pub/Sub)"
 pubDate: 2025-09-08
 description: "로컬 Caffeine 캐시와 Redis 캐시를 병합 운영하던 중 발생한 인스턴스 간 캐시 불일치를 Redis Pub/Sub 무효화 이벤트로 해결한 과정을 기록합니다."
+series: "Redis 프로젝트 회고"
 tags: ["redis", "caffeine", "pubsub", "cache", "java", "backend"]
 heroImage: ""
 ---
