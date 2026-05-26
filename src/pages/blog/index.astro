@@ -1,90 +1,95 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import { formatDate, seriesSlug } from '../../lib/utils';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const allTags = [...new Set(posts.flatMap(p => p.data.tags))].sort();
 ---
 
-<BaseLayout title="Blog" description="Articles about web development, open source, and software engineering.">
-  <h1>Blog</h1>
-  <p class="count">{posts.length} {posts.length === 1 ? 'post' : 'posts'}</p>
+<BaseLayout title="블로그">
+  <div class="page-fade">
+    <div class="page-wrap blog-list-page">
+      <div class="section-header" style="margin-bottom: 24px;">
+        <span class="section-title">전체 글 ({posts.length})</span>
+        <button class="section-link" id="reset-filter" style="display:none;">필터 초기화</button>
+      </div>
 
-  <ul class="post-list">
-    {posts.map((post) => (
-      <li>
-        <a href={`/blog/${post.slug}`}>
-          <div class="post-header">
-            <span class="post-title">{post.data.title}</span>
-            <time>{post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</time>
-          </div>
-          <p class="post-description">{post.data.description}</p>
-          <div class="post-tags">
-            {post.data.tags.map(tag => <span class="tag">{tag}</span>)}
-          </div>
-        </a>
-      </li>
-    ))}
-  </ul>
+      <!-- Tag Filter -->
+      <div class="tag-filter" id="tag-filter">
+        {allTags.map(tag => (
+          <button class="tag-chip-btn" data-tag={tag}>{tag}</button>
+        ))}
+      </div>
+
+      <!-- Post Cards -->
+      <div class="post-grid" id="post-grid">
+        {posts.map(post => (
+          <a
+            href={`/blog/${post.slug}`}
+            class="post-card"
+            data-tags={post.data.tags.join(',')}
+          >
+            {post.data.series && (
+              <span class="card-series">{post.data.series}</span>
+            )}
+            <div class="card-title">{post.data.title}</div>
+            <p class="card-desc">{post.data.description}</p>
+            <div class="card-footer">
+              <div class="card-tags">
+                {post.data.tags.slice(0, 4).map(t => (
+                  <span class="tag-chip">{t}</span>
+                ))}
+              </div>
+              <span class="card-date">{formatDate(post.data.pubDate)}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <p id="no-results" style="display:none; color: var(--text3); font-size: 14px; padding: 40px 0; text-align: center;">
+        해당 태그의 글이 없습니다.
+      </p>
+    </div>
+  </div>
 </BaseLayout>
 
-<style>
-  h1 { margin-bottom: 0.25rem; }
+<script is:inline>
+  (function () {
+    var activeTags = [];
+    var chips = document.querySelectorAll('.tag-chip-btn');
+    var cards = document.querySelectorAll('.post-card');
+    var resetBtn = document.getElementById('reset-filter');
+    var noResults = document.getElementById('no-results');
 
-  .count {
-    color: var(--color-text-muted);
-    font-size: 0.9rem;
-    margin-bottom: 2.5rem;
-    font-family: var(--font-mono);
-  }
+    function filter() {
+      var visible = 0;
+      cards.forEach(function (card) {
+        var tags = (card.dataset.tags || '').split(',');
+        var show = activeTags.length === 0 || activeTags.every(function (t) { return tags.includes(t); });
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      noResults.style.display = visible === 0 ? 'block' : 'none';
+      resetBtn.style.display = activeTags.length > 0 ? '' : 'none';
+    }
 
-  .post-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
+    chips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var tag = chip.dataset.tag;
+        var idx = activeTags.indexOf(tag);
+        if (idx === -1) { activeTags.push(tag); chip.classList.add('active'); }
+        else { activeTags.splice(idx, 1); chip.classList.remove('active'); }
+        filter();
+      });
+    });
 
-  .post-list li a {
-    display: block;
-    padding: 1.1rem;
-    border-radius: var(--radius);
-    border: 1px solid transparent;
-    color: var(--color-text);
-    transition: border-color 0.15s, background 0.15s;
-  }
-
-  .post-list li a:hover {
-    border-color: var(--color-border);
-    background: var(--color-surface);
-    text-decoration: none;
-  }
-
-  .post-header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 0.35rem;
-    flex-wrap: wrap;
-  }
-
-  .post-title { font-weight: 600; }
-
-  time {
-    font-size: 0.8rem;
-    color: var(--color-text-muted);
-    font-family: var(--font-mono);
-    flex-shrink: 0;
-  }
-
-  .post-description {
-    font-size: 0.9rem;
-    color: var(--color-text-muted);
-    margin-bottom: 0.5rem;
-  }
-
-  .post-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-</style>
+    resetBtn?.addEventListener('click', function () {
+      activeTags = [];
+      chips.forEach(function (c) { c.classList.remove('active'); });
+      filter();
+    });
+  })();
+</script>

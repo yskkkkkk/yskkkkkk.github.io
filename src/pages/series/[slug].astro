@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { formatDate, readingTime, seriesSlug } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('blog', ({ data }) => !data.draft && !!data.series);
+  const seriesNames = [...new Set(allPosts.map(p => p.data.series as string))];
+  return seriesNames.map(name => ({
+    params: { slug: seriesSlug(name) },
+    props: { seriesName: name },
+  }));
+}
+
+interface Props {
+  seriesName: string;
+}
+
+const { seriesName } = Astro.props;
+const allPosts = await getCollection('blog', ({ data }) => !data.draft && data.series === seriesName);
+const sortedPosts = allPosts.sort((a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf());
+---
+
+<BaseLayout title={seriesName}>
+  <div class="page-fade">
+    <div class="page-wrap series-page">
+      <div class="series-hero">
+        <div class="series-hero-label">아티클 시리즈</div>
+        <h1 class="series-hero-title">{seriesName}</h1>
+        <p class="series-hero-desc">
+          총 {sortedPosts.length}편 · {formatDate(sortedPosts[0]?.data.pubDate)} ~ {formatDate(sortedPosts[sortedPosts.length - 1]?.data.pubDate)}
+        </p>
+      </div>
+
+      <div class="section-header">
+        <span class="section-title">총 {sortedPosts.length}편</span>
+        <a href="/blog" class="section-link">← 블로그 목록</a>
+      </div>
+
+      <div class="series-posts-timeline">
+        {sortedPosts.map((post, i) => (
+          <a href={`/blog/${post.slug}`} class="timeline-item">
+            <span class="timeline-num">{String(i + 1).padStart(2, '0')}</span>
+            <div class="timeline-body">
+              <div class="timeline-title">{post.data.title}</div>
+              <p class="timeline-desc">{post.data.description}</p>
+              <div class="timeline-meta">
+                <span class="timeline-date">{formatDate(post.data.pubDate)}</span>
+                <span class="timeline-date">· {readingTime(post.body)}분</span>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</BaseLayout>

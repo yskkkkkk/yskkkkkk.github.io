@@ -1,5 +1,9 @@
 ---
-import BaseLayout from './BaseLayout.astro';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { getCollection } from 'astro:content';
+import { readingTime, formatDate, seriesSlug } from '../lib/utils';
 
 interface Props {
   title: string;
@@ -7,92 +11,170 @@ interface Props {
   pubDate: Date;
   updatedDate?: Date;
   heroImage?: string;
-  tags?: string[];
+  tags: string[];
+  series?: string;
+  slug: string;
+  headings: { depth: number; slug: string; text: string }[];
+  body: string;
 }
 
-const { title, description, pubDate, updatedDate, heroImage, tags = [] } = Astro.props;
+const { title, description, pubDate, heroImage, tags, series, slug, headings, body } = Astro.props;
 
-const formattedDate = pubDate.toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-});
+const dateLabel = formatDate(pubDate);
+const mins = readingTime(body);
+const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 
-const formattedUpdated = updatedDate?.toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-});
+let seriesPosts: { slug: string; title: string; pubDate: Date }[] = [];
+if (series) {
+  const all = await getCollection('blog', ({ data }) => !data.draft && data.series === series);
+  seriesPosts = all
+    .sort((a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf())
+    .map(p => ({ slug: p.slug, title: p.data.title, pubDate: p.data.pubDate }));
+}
+
+const seriesHref = series ? `/series/${seriesSlug(series)}` : '#';
 ---
 
-<BaseLayout title={title} description={description}>
-  <article>
-    {heroImage && (
-      <img class="hero" src={heroImage} alt={title} />
-    )}
-    <header>
-      <div class="meta">
-        <time datetime={pubDate.toISOString()}>{formattedDate}</time>
-        {formattedUpdated && (
-          <span class="updated">Updated: {formattedUpdated}</span>
-        )}
-      </div>
-      <h1>{title}</h1>
-      <p class="description">{description}</p>
-      {tags.length > 0 && (
-        <div class="tags">
-          {tags.map(tag => <span class="tag">{tag}</span>)}
+<!doctype html>
+<html lang="ko">
+  <head>
+    <BaseHead title={title} description={description} image={heroImage} />
+  </head>
+  <body data-slug={slug}>
+    <div class="reading-progress" id="reading-progress"></div>
+    <Header />
+    <main style="flex: 1;">
+      <div class="page-fade">
+        <div class="page-wrap post-page">
+          <!-- Breadcrumb -->
+          <div class="breadcrumb">
+            <a href="/">홈</a>
+            <span>›</span>
+            <a href="/blog">블로그</a>
+            {series && (
+              <>
+                <span>›</span>
+                <a href={seriesHref}>{series}</a>
+              </>
+            )}
+          </div>
+
+          <div class="post-layout">
+            <article class="post-main">
+              <h1 class="post-headline">{title}</h1>
+              <div class="post-meta">
+                <span class="meta-date">{dateLabel}</span>
+                <span class="meta-read">{mins}분 읽기</span>
+                {series && (
+                  <a href={seriesHref} class="meta-series-pill">{series}</a>
+                )}
+                <div class="meta-tags">
+                  {tags.slice(0, 4).map(t => (
+                    <span class="tag-chip">{t}</span>
+                  ))}
+                </div>
+              </div>
+
+              <div class="post-content">
+                <slot />
+              </div>
+
+              {seriesPosts.length > 0 && (
+                <div class="series-nav-bar">
+                  <span class="series-nav-label">시리즈</span>
+                  <span class="series-nav-title">{series}</span>
+                  <div class="series-posts-list">
+                    {seriesPosts.map((sp, i) => (
+                      <a
+                        href={`/blog/${sp.slug}`}
+                        class:list={['series-post-item', { current: sp.slug === slug }]}
+                      >
+                        <span class="series-post-order">{String(i + 1).padStart(2, '0')}</span>
+                        <span>{sp.title}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </article>
+
+            {tocHeadings.length > 0 && (
+              <aside>
+                <nav class="toc" id="toc">
+                  <div class="toc-title">목차</div>
+                  {tocHeadings.map(h => (
+                    <a
+                      href={`#${h.slug}`}
+                      class:list={['toc-item', { 'depth-3': h.depth === 3 }]}
+                      data-toc={h.slug}
+                    >
+                      {h.text}
+                    </a>
+                  ))}
+                </nav>
+              </aside>
+            )}
+          </div>
         </div>
-      )}
-    </header>
-    <hr />
-    <div class="prose">
-      <slot />
-    </div>
-  </article>
-  <a class="back" href="/blog">&larr; All posts</a>
-</BaseLayout>
+      </div>
+    </main>
+    <Footer />
 
-<style>
-  article { max-width: 100%; }
+    <script is:inline>
+      // Reading progress
+      var progressBar = document.getElementById('reading-progress');
+      if (progressBar) {
+        window.addEventListener('scroll', function () {
+          var docH = document.documentElement.scrollHeight - window.innerHeight;
+          var pct = docH > 0 ? (window.pageYOffset / docH) * 100 : 0;
+          progressBar.style.width = Math.min(100, pct) + '%';
+        }, { passive: true });
+      }
 
-  .hero {
-    width: 100%;
-    border-radius: var(--radius);
-    margin-bottom: 2rem;
-    border: 1px solid var(--color-border);
-  }
+      // TOC highlight via IntersectionObserver
+      var tocItems = document.querySelectorAll('[data-toc]');
+      if (tocItems.length) {
+        var headingEls = Array.from(tocItems).map(function (el) {
+          return document.getElementById(el.dataset.toc);
+        }).filter(Boolean);
 
-  header { margin-bottom: 1.5rem; }
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              tocItems.forEach(function (el) { el.classList.remove('active'); });
+              var id = entry.target.id;
+              var active = document.querySelector('[data-toc="' + id + '"]');
+              if (active) active.classList.add('active');
+            }
+          });
+        }, { rootMargin: '-20% 0px -70% 0px' });
 
-  .meta {
-    display: flex;
-    gap: 1rem;
-    font-size: 0.85rem;
-    color: var(--color-text-muted);
-    margin-bottom: 0.75rem;
-    font-family: var(--font-mono);
-  }
+        headingEls.forEach(function (el) { observer.observe(el); });
+      }
 
-  h1 { margin-bottom: 0.5rem; }
+      // Scroll position → URL hash
+      var postSlug = document.body.dataset.slug;
+      var headingNodes = document.querySelectorAll('.post-content h2, .post-content h3');
+      var scrollTimer;
+      window.addEventListener('scroll', function () {
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(function () {
+          var current = '';
+          headingNodes.forEach(function (h) {
+            if (h.getBoundingClientRect().top < 120) current = h.id;
+          });
+          if (current) history.replaceState(null, '', '/blog/' + postSlug + '#' + current);
+        }, 350);
+      }, { passive: true });
 
-  .description {
-    color: var(--color-text-muted);
-    font-size: 1.05rem;
-    margin-bottom: 1rem;
-  }
-
-  .tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-
-  .prose :global(h2),
-  .prose :global(h3) { color: var(--color-text); }
-
-  .back {
-    display: inline-block;
-    margin-top: 3rem;
-    font-size: 0.9rem;
-    color: var(--color-text-muted);
-  }
-
-  .back:hover { color: var(--color-accent); text-decoration: none; }
-</style>
+      // Scroll to hash on load
+      var hash = window.location.hash.slice(1);
+      if (hash) {
+        setTimeout(function () {
+          var el = document.getElementById(hash);
+          if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - 84 });
+        }, 100);
+      }
+    </script>
+  </body>
+</html>
