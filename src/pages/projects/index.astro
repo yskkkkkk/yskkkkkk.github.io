@@ -1,0 +1,124 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects'))
+  .sort((a, b) => {
+    if (a.data.featured && !b.data.featured) return -1;
+    if (!a.data.featured && b.data.featured) return 1;
+    return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
+  });
+---
+
+<BaseLayout title="Projects" description="A collection of projects I've built or contributed to.">
+  <h1>Projects</h1>
+  <p class="count">{projects.length} {projects.length === 1 ? 'project' : 'projects'}</p>
+
+  <ul class="project-list">
+    {projects.map((project) => (
+      <li>
+        <a href={`/projects/${project.slug}`}>
+          <div class="project-header">
+            <span class="project-title">
+              {project.data.title}
+              {project.data.featured && <span class="featured">featured</span>}
+            </span>
+            <div class="links">
+              {project.data.repoUrl && <span class="link-badge">repo</span>}
+              {project.data.liveUrl && <span class="link-badge live">live</span>}
+            </div>
+          </div>
+          <p class="project-description">{project.data.description}</p>
+          <div class="project-tags">
+            {project.data.tags.map(tag => <span class="tag">{tag}</span>)}
+          </div>
+        </a>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>
+
+<style>
+  h1 { margin-bottom: 0.25rem; }
+
+  .count {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 2.5rem;
+    font-family: var(--font-mono);
+  }
+
+  .project-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .project-list li a {
+    display: block;
+    padding: 1.1rem;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    color: var(--color-text);
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .project-list li a:hover {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    text-decoration: none;
+  }
+
+  .project-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.35rem;
+    flex-wrap: wrap;
+  }
+
+  .project-title {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .featured {
+    font-size: 0.7rem;
+    background: rgba(124, 106, 247, 0.15);
+    color: var(--color-accent);
+    border: 1px solid rgba(124, 106, 247, 0.3);
+    border-radius: 4px;
+    padding: 0.1em 0.45em;
+    font-weight: 500;
+  }
+
+  .links { display: flex; gap: 0.4rem; }
+
+  .link-badge {
+    font-size: 0.7rem;
+    font-family: var(--font-mono);
+    padding: 0.1em 0.5em;
+    border-radius: 4px;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+  }
+
+  .link-badge.live {
+    border-color: rgba(100, 200, 100, 0.3);
+    color: #6dc96d;
+  }
+
+  .project-description {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .project-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+</style>

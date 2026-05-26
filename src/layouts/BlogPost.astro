@@ -1,0 +1,98 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  heroImage?: string;
+  tags?: string[];
+}
+
+const { title, description, pubDate, updatedDate, heroImage, tags = [] } = Astro.props;
+
+const formattedDate = pubDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const formattedUpdated = updatedDate?.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout title={title} description={description}>
+  <article>
+    {heroImage && (
+      <img class="hero" src={heroImage} alt={title} />
+    )}
+    <header>
+      <div class="meta">
+        <time datetime={pubDate.toISOString()}>{formattedDate}</time>
+        {formattedUpdated && (
+          <span class="updated">Updated: {formattedUpdated}</span>
+        )}
+      </div>
+      <h1>{title}</h1>
+      <p class="description">{description}</p>
+      {tags.length > 0 && (
+        <div class="tags">
+          {tags.map(tag => <span class="tag">{tag}</span>)}
+        </div>
+      )}
+    </header>
+    <hr />
+    <div class="prose">
+      <slot />
+    </div>
+  </article>
+  <a class="back" href="/blog">&larr; All posts</a>
+</BaseLayout>
+
+<style>
+  article { max-width: 100%; }
+
+  .hero {
+    width: 100%;
+    border-radius: var(--radius);
+    margin-bottom: 2rem;
+    border: 1px solid var(--color-border);
+  }
+
+  header { margin-bottom: 1.5rem; }
+
+  .meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.75rem;
+    font-family: var(--font-mono);
+  }
+
+  h1 { margin-bottom: 0.5rem; }
+
+  .description {
+    color: var(--color-text-muted);
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+  }
+
+  .tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+  .prose :global(h2),
+  .prose :global(h3) { color: var(--color-text); }
+
+  .back {
+    display: inline-block;
+    margin-top: 3rem;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+  }
+
+  .back:hover { color: var(--color-accent); text-decoration: none; }
+</style>

@@ -1,0 +1,190 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { SITE_DESCRIPTION } from '../consts';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const recentPosts = allPosts
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
+
+const featuredProjects = await getCollection('projects', ({ data }) => data.featured);
+---
+
+<BaseLayout description={SITE_DESCRIPTION}>
+  <section class="hero">
+    <p class="greeting">Hey, I'm</p>
+    <h1>yskkkkkk</h1>
+    <p class="tagline">Software developer. I write about web development, open source, and things I find interesting.</p>
+    <div class="cta">
+      <a href="/blog" class="btn-primary">Read Blog</a>
+      <a href="/about" class="btn-secondary">About Me</a>
+    </div>
+  </section>
+
+  {recentPosts.length > 0 && (
+    <section class="posts-section">
+      <div class="section-header">
+        <h2>Recent Posts</h2>
+        <a href="/blog">All posts &rarr;</a>
+      </div>
+      <ul class="post-list">
+        {recentPosts.map((post) => (
+          <li>
+            <a href={`/blog/${post.slug}`}>
+              <div class="post-title">{post.data.title}</div>
+              <div class="post-meta">
+                <time>{post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</time>
+                <div class="post-tags">
+                  {post.data.tags.slice(0, 3).map(tag => <span class="tag">{tag}</span>)}
+                </div>
+              </div>
+              <p class="post-description">{post.data.description}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {featuredProjects.length > 0 && (
+    <section class="projects-section">
+      <div class="section-header">
+        <h2>Featured Projects</h2>
+        <a href="/projects">All projects &rarr;</a>
+      </div>
+      <ul class="project-list">
+        {featuredProjects.map((project) => (
+          <li>
+            <a href={`/projects/${project.slug}`}>
+              <div class="project-title">{project.data.title}</div>
+              <p class="post-description">{project.data.description}</p>
+              <div class="post-tags">
+                {project.data.tags.slice(0, 4).map(tag => <span class="tag">{tag}</span>)}
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .hero {
+    padding: 3rem 0 4rem;
+  }
+
+  .greeting {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    margin-bottom: 0.25rem;
+  }
+
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--color-text), var(--color-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .tagline {
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+    max-width: 480px;
+    margin-bottom: 2rem;
+  }
+
+  .cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary, .btn-secondary {
+    display: inline-block;
+    padding: 0.6rem 1.25rem;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: opacity 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--color-accent);
+    color: #fff;
+  }
+
+  .btn-secondary {
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+
+  .btn-primary:hover, .btn-secondary:hover {
+    opacity: 0.85;
+    text-decoration: none;
+  }
+
+  .posts-section, .projects-section { margin-bottom: 3rem; }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0.5rem;
+  }
+
+  .section-header h2 { font-size: 1.1rem; }
+  .section-header a { font-size: 0.85rem; color: var(--color-text-muted); }
+  .section-header a:hover { color: var(--color-accent); text-decoration: none; }
+
+  .post-list, .project-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .post-list li a, .project-list li a {
+    display: block;
+    padding: 1rem;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    color: var(--color-text);
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .post-list li a:hover, .project-list li a:hover {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    text-decoration: none;
+  }
+
+  .post-title, .project-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.4rem;
+  }
+
+  time { font-size: 0.8rem; color: var(--color-text-muted); font-family: var(--font-mono); }
+
+  .post-description {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin: 0.25rem 0 0.5rem;
+  }
+
+  .post-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+</style>

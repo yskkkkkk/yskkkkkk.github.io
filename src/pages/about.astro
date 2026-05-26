@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About" description="Learn more about me — a software developer interested in web technologies and open source.">
+  <h1>About</h1>
+  <p class="lead">Hi, I'm yskkkkkk — a software developer interested in web technologies, open source, and building things that matter.</p>
+
+  <h2>What I do</h2>
+  <p>
+    I spend most of my time writing code, reading documentation, and occasionally breaking things in production.
+    I enjoy working across the stack but lean towards the web platform — browsers, APIs, and developer tooling.
+  </p>
+
+  <h2>Tech I work with</h2>
+  <ul>
+    <li>TypeScript / JavaScript</li>
+    <li>React, Astro, and other frontend frameworks</li>
+    <li>Node.js, REST APIs, databases</li>
+    <li>Git, GitHub Actions, CI/CD</li>
+  </ul>
+
+  <h2>This blog</h2>
+  <p>
+    I write about things I'm learning, projects I'm working on, and ideas I find interesting.
+    Posts are infrequent but hopefully useful.
+  </p>
+  <p>
+    The site is built with <a href="https://astro.build">Astro</a> and deployed to GitHub Pages.
+    Source code is on <a href="https://github.com/yskkkkkk/yskkkkkk.github.io">GitHub</a>.
+  </p>
+</BaseLayout>
+
+<style>
+  h1 { margin-bottom: 1rem; }
+  .lead {
+    font-size: 1.1rem;
+    color: var(--color-text-muted);
+    margin-bottom: 2rem;
+  }
+</style>
