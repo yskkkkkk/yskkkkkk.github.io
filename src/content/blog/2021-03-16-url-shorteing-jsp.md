@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "URL Shortening Algorithm 구현하기(2)"
 pubDate: 2021-03-16
 description: "URL shorteing 간단하게 입력할 수 있는 jsp 단과 프론트 검증 및 기능 작업까지 방금 막 끝냈다. 다 만들고 보니 가장 중요한 기능적인 부분은 처음 생각 그대로 만들었고, 결국 db에서 CRUD 하는 느낌이라 조금 허접해 보이긴 하지만 ... 또 생각보다 "
 tags: ["코딩이야기"]

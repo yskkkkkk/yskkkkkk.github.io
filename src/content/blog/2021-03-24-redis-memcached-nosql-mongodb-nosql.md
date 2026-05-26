@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "백엔드개발자 질문 정리"
 pubDate: 2021-03-24
 description: "- redis, memcached > nosql - mongodb > nosql Redis 와 Memcached 는 모두 nosql 중 key-value 형 데이터베이스로 빠른 속도가 장점인 데이터 베이스다. 메모리 데이터 저장소. 캐시 형태로 데이터를 사용한다. Me"
 tags: ["코딩이야기"]
