@@ -1,0 +1,90 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout title="Blog" description="Articles about web development, open source, and software engineering.">
+  <h1>Blog</h1>
+  <p class="count">{posts.length} {posts.length === 1 ? 'post' : 'posts'}</p>
+
+  <ul class="post-list">
+    {posts.map((post) => (
+      <li>
+        <a href={`/blog/${post.slug}`}>
+          <div class="post-header">
+            <span class="post-title">{post.data.title}</span>
+            <time>{post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</time>
+          </div>
+          <p class="post-description">{post.data.description}</p>
+          <div class="post-tags">
+            {post.data.tags.map(tag => <span class="tag">{tag}</span>)}
+          </div>
+        </a>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>
+
+<style>
+  h1 { margin-bottom: 0.25rem; }
+
+  .count {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 2.5rem;
+    font-family: var(--font-mono);
+  }
+
+  .post-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .post-list li a {
+    display: block;
+    padding: 1.1rem;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    color: var(--color-text);
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .post-list li a:hover {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    text-decoration: none;
+  }
+
+  .post-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.35rem;
+    flex-wrap: wrap;
+  }
+
+  .post-title { font-weight: 600; }
+
+  time {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    flex-shrink: 0;
+  }
+
+  .post-description {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .post-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+</style>
