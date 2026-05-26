@@ -2,6 +2,7 @@
 title: "RestTemplate 한글 깨짐과 Custom ObjectMapper 미적용 해결하기"
 pubDate: 2025-08-27
 description: "기본 RestTemplate의 ISO-8859-1 인코딩과 커스텀 ObjectMapper 미반영 문제를 직접 Primary Bean으로 등록해 해결한 과정을 기록합니다."
+series: "Redis 프로젝트 회고"
 tags: ["spring", "resttemplate", "java", "backend", "utf-8"]
 heroImage: ""
 ---

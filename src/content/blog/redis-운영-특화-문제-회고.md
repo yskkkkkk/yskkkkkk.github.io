@@ -64,4 +64,4 @@ Redis 프로젝트는 개발 과정에서의 문제 해결과 운영 경험을 �
 
 아무리 예상을 많이 해도 예상치 못한 문제가 나온다는 걸 배운 그런 프로젝트였다.
 
-![프로젝트 메인 진행 기획자님의 뿌듯한 소감](https://velog.velcdn.com/images/fb1014/post/c3dca1a1-ae17-4db4-a179-ae367421906e/image.png)
+![프로젝트 메인 진행 기획자님의 뿌듯한 소감](/images/redis-project-review.png)
