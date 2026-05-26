@@ -1,73 +1,184 @@
 ---
-import { SITE_TITLE, NAV_LINKS } from '../consts';
+import { getCollection } from 'astro:content';
+import { SITE_TITLE } from '../consts';
+import { formatDate } from '../lib/utils';
 
 const { pathname } = Astro.url;
+
+const currentSection =
+  pathname === '/' ? 'home'
+  : pathname.startsWith('/blog') || pathname.startsWith('/series') ? 'blog'
+  : pathname.startsWith('/projects') ? 'projects'
+  : pathname.startsWith('/about') ? 'about'
+  : '';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const searchPosts = allPosts
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .map(p => ({
+    slug: p.slug,
+    title: p.data.title,
+    description: p.data.description,
+    tags: p.data.tags,
+    series: p.data.series ?? '',
+    dateLabel: formatDate(p.data.pubDate),
+  }));
 ---
 
-<header>
-  <nav>
-    <a href="/" class="site-title">{SITE_TITLE}</a>
-    <ul>
-      {NAV_LINKS.map(({ label, href }) => (
-        <li>
-          <a
-            href={href}
-            class:list={[{ active: pathname === href || (href !== '/' && pathname.startsWith(href)) }]}
-          >
-            {label}
-          </a>
-        </li>
-      ))}
-    </ul>
-  </nav>
-</header>
+<nav class="blog-nav" id="blog-nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">{SITE_TITLE}</a>
+    <div class="nav-links">
+      <a href="/" class:list={['nav-link', { active: currentSection === 'home' }]}>홈</a>
+      <a href="/blog" class:list={['nav-link', { active: currentSection === 'blog' }]}>블로그</a>
+      <a href="/about" class:list={['nav-link', { active: currentSection === 'about' }]}>소개</a>
+    </div>
+    <div class="nav-right">
+      <button class="search-btn" id="search-btn" aria-label="검색">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+          <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span class="search-btn-label">검색</span>
+        <kbd>⌘K</kbd>
+      </button>
+      <button class="theme-toggle" id="theme-toggle" aria-label="다크 모드 토글">
+        <div class="toggle-track">
+          <div class="toggle-thumb"></div>
+        </div>
+      </button>
+    </div>
+  </div>
+</nav>
 
-<style>
-  header {
-    border-bottom: 1px solid var(--color-border);
-    padding: 0 1.5rem;
-  }
+<!-- Search data (embedded for client-side search) -->
+<div id="search-data" data-posts={JSON.stringify(searchPosts)} style="display:none;"></div>
 
-  nav {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 60px;
-    gap: 2rem;
-  }
+<!-- Search Modal -->
+<div class="search-overlay" id="search-overlay">
+  <div class="search-modal">
+    <div class="search-input-wrap">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+        <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input id="search-input" class="search-input" placeholder="포스트 검색..." autocomplete="off" />
+      <kbd class="search-esc">ESC</kbd>
+    </div>
+    <div id="search-results" class="search-results"></div>
+    <div class="search-hint">
+      <span class="search-hint-item"><kbd>↑</kbd><kbd>↓</kbd> 이동</span>
+      <span class="search-hint-item"><kbd>↵</kbd> 열기</span>
+      <span class="search-hint-item"><kbd>ESC</kbd> 닫기</span>
+    </div>
+  </div>
+</div>
 
-  .site-title {
-    font-weight: 700;
-    font-size: 1rem;
-    color: var(--color-text);
-    font-family: var(--font-mono);
-    flex-shrink: 0;
-  }
+<script is:inline>
+  // Nav scroll
+  const nav = document.getElementById('blog-nav');
+  window.addEventListener('scroll', function () {
+    nav && nav.classList.toggle('scrolled', window.scrollY > 10);
+  }, { passive: true });
 
-  .site-title:hover {
-    color: var(--color-accent);
-    text-decoration: none;
-  }
+  // Theme toggle
+  document.getElementById('theme-toggle')?.addEventListener('click', function () {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
 
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    gap: 1.5rem;
-  }
+  // Search
+  (function () {
+    const overlay = document.getElementById('search-overlay');
+    const input = document.getElementById('search-input');
+    const resultsEl = document.getElementById('search-results');
+    const dataEl = document.getElementById('search-data');
+    if (!overlay || !input || !resultsEl || !dataEl) return;
 
-  ul a {
-    font-size: 0.9rem;
-    color: var(--color-text-muted);
-    transition: color 0.15s;
-  }
+    let posts = [];
+    try { posts = JSON.parse(dataEl.dataset.posts || '[]'); } catch (e) {}
+    let focusedIdx = 0;
 
-  ul a:hover,
-  ul a.active {
-    color: var(--color-text);
-    text-decoration: none;
-  }
-</style>
+    function open() {
+      overlay.classList.add('open');
+      input.value = '';
+      input.focus();
+      focusedIdx = 0;
+      render('');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function close() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function hl(text, q) {
+      if (!q) return text;
+      const i = text.toLowerCase().indexOf(q.toLowerCase());
+      if (i === -1) return text;
+      return text.slice(0, i) + '<mark>' + text.slice(i, i + q.length) + '</mark>' + text.slice(i + q.length);
+    }
+
+    function render(q) {
+      const results = q.trim().length < 1
+        ? posts.slice(0, 6)
+        : posts.filter(function (p) {
+            const ql = q.toLowerCase();
+            return p.title.toLowerCase().includes(ql) ||
+              p.description.toLowerCase().includes(ql) ||
+              p.tags.some(function (t) { return t.toLowerCase().includes(ql); }) ||
+              (p.series || '').toLowerCase().includes(ql);
+          });
+
+      if (results.length === 0) {
+        resultsEl.innerHTML = '<div class="search-empty">"' + q + '"에 대한 결과가 없습니다.</div>';
+        return;
+      }
+
+      resultsEl.innerHTML = results.map(function (p, i) {
+        return '<button class="search-result-item' + (i === focusedIdx ? ' focused' : '') + '" data-href="/blog/' + p.slug + '">' +
+          '<span class="result-title">' + hl(p.title, q) + '</span>' +
+          '<div class="result-meta">' +
+          (p.series ? '<span class="result-series">' + p.series + '</span>' : '') +
+          '<span class="result-tags">' + p.tags.slice(0, 3).join(' · ') + '</span>' +
+          '<span class="result-date">' + p.dateLabel + '</span>' +
+          '</div></button>';
+      }).join('');
+
+      resultsEl.querySelectorAll('.search-result-item').forEach(function (btn, i) {
+        btn.addEventListener('click', function () { window.location.href = btn.dataset.href; close(); });
+        btn.addEventListener('mouseenter', function () { focusedIdx = i; updateFocus(); });
+      });
+    }
+
+    function updateFocus() {
+      resultsEl.querySelectorAll('.search-result-item').forEach(function (btn, i) {
+        btn.classList.toggle('focused', i === focusedIdx);
+      });
+    }
+
+    document.getElementById('search-btn')?.addEventListener('click', open);
+
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) close();
+    });
+
+    input.addEventListener('input', function (e) {
+      focusedIdx = 0;
+      render(e.target.value);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); open(); return; }
+      if (!overlay.classList.contains('open')) return;
+      const items = resultsEl.querySelectorAll('.search-result-item');
+      if (e.key === 'Escape') { close(); return; }
+      if (e.key === 'ArrowDown') { focusedIdx = Math.min(focusedIdx + 1, items.length - 1); updateFocus(); e.preventDefault(); return; }
+      if (e.key === 'ArrowUp') { focusedIdx = Math.max(focusedIdx - 1, 0); updateFocus(); e.preventDefault(); return; }
+      if (e.key === 'Enter' && items[focusedIdx]) { window.location.href = items[focusedIdx].dataset.href; close(); }
+    });
+  })();
+</script>
