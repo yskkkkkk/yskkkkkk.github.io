@@ -6,8 +6,15 @@ import { formatDate } from '../../lib/utils';
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
-const allTags = Array.from(new Set(posts.flatMap(p => p.data.tags || []))).sort();
+// Sort tags by frequency descending
+const tagFreq = new Map<string, number>();
+posts.forEach(p => (p.data.tags || []).forEach(t => tagFreq.set(t, (tagFreq.get(t) || 0) + 1)));
+const allTags = [...tagFreq.entries()]
+  .sort((a, b) => b[1] - a[1])
+  .map(([tag]) => tag);
 
+const TOP_N = 8;
+const hiddenCount = Math.max(0, allTags.length - TOP_N);
 const PAGE_SIZE = 10;
 ---
 
@@ -20,10 +27,18 @@ const PAGE_SIZE = 10;
       <button id="reset-filter-btn" class="section-link" style="display: none;">필터 초기화</button>
     </div>
 
-    <div class="tag-filter">
-      {allTags.map(tag => (
-        <button class="tag-chip-btn" data-tag={tag}>{tag}</button>
+    <div class="tag-filter" id="tag-filter">
+      {allTags.map((tag, i) => (
+        <button
+          class={`tag-chip-btn${i >= TOP_N ? ' tag-extra' : ''}`}
+          data-tag={tag}
+        >{tag}</button>
       ))}
+      {hiddenCount > 0 && (
+        <button class="tag-toggle-btn" id="tag-toggle-btn">
+          태그 더보기 +{hiddenCount}
+        </button>
+      )}
     </div>
 
     <div class="post-grid" id="post-grid">
@@ -56,7 +71,7 @@ const PAGE_SIZE = 10;
   </div>
 </BaseLayout>
 
-<script is:inline define:vars={{ PAGE_SIZE }}>
+<script is:inline define:vars={{ PAGE_SIZE, hiddenCount }}>
   (function () {
     const allCards = Array.from(document.querySelectorAll('.post-card-wrapper'));
     const chips = document.querySelectorAll('.tag-chip-btn');
@@ -64,10 +79,26 @@ const PAGE_SIZE = 10;
     const resetBtn = document.getElementById('reset-filter-btn');
     const emptyMsg = document.getElementById('no-posts-message');
     const paginationEl = document.getElementById('pagination');
+    const tagToggleBtn = document.getElementById('tag-toggle-btn');
 
     let activeTags = [];
     let currentPage = 1;
+    let tagsExpanded = false;
 
+    // ── Tag expand/collapse ──
+    if (tagToggleBtn) {
+      tagToggleBtn.addEventListener('click', () => {
+        tagsExpanded = !tagsExpanded;
+        document.querySelectorAll('.tag-extra').forEach(el => {
+          el.style.display = tagsExpanded ? '' : 'none';
+        });
+        tagToggleBtn.textContent = tagsExpanded
+          ? '접기 ↑'
+          : `태그 더보기 +${hiddenCount}`;
+      });
+    }
+
+    // ── Pagination helpers ──
     function getFiltered() {
       if (!activeTags.length) return allCards;
       return allCards.filter(card => {
@@ -162,6 +193,11 @@ const PAGE_SIZE = 10;
       chips.forEach(c => c.classList.remove('active'));
       currentPage = 1;
       render();
+    });
+
+    // Hide extra tags on init
+    document.querySelectorAll('.tag-extra').forEach(el => {
+      el.style.display = 'none';
     });
 
     render();

@@ -536,6 +536,23 @@ img {
   color: #fff;
   border-color: var(--accent);
 }
+.tag-toggle-btn {
+  font-size: 12px;
+  font-family: var(--mono);
+  color: var(--accent);
+  background: none;
+  border: 1px dashed var(--border2);
+  padding: 5px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+  align-self: center;
+}
+.tag-toggle-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent2);
+}
 .post-grid {
   display: flex;
   flex-direction: column;
