@@ -1,3 +1,9 @@
 ---
-return Astro.redirect('/series/redis-project');
+import { getCollection } from 'astro:content';
+import { seriesSlug } from '../../lib/utils';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft && !!data.series);
+const seriesNames = [...new Set(allPosts.map(p => p.data.series as string))].sort();
+const first = seriesNames[0];
+return Astro.redirect(first ? `/series/${seriesSlug(first)}` : '/blog', 302);
 ---
