@@ -16,9 +16,17 @@ export function formatDate(date: Date): string {
   });
 }
 
+const SERIES_SLUG_MAP: Record<string, string> = {
+  'Redis 프로젝트 회고': 'redis-project',
+};
+
 export function seriesSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9가-힣-]/g, '');
+  return (
+    SERIES_SLUG_MAP[name] ??
+    name
+      .toLowerCase()
+      .replace(/[^\w가-힣\s]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/^-|-$/g, '')
+  );
 }

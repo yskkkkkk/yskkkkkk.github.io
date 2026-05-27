@@ -1,133 +1,181 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import { formatDate } from '../../lib/utils';
 
-// Fetch non-draft posts, sorted by date descending
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
-// Extract all unique tags, sorted alphabetically
-const allTags = Array.from(
-  new Set(posts.flatMap(post => post.data.tags || []))
-).sort();
+// Sort tags by frequency descending
+const tagFreq = new Map<string, number>();
+posts.forEach(p => (p.data.tags || []).forEach(t => tagFreq.set(t, (tagFreq.get(t) || 0) + 1)));
+const allTags = [...tagFreq.entries()]
+  .sort((a, b) => b[1] - a[1])
+  .map(([tag]) => tag);
 
-// Helper to format date as YYYY.MM.DD
-const formatDate = (date: Date) => {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}.${m}.${d}`;
-};
+const TOP_N = 8;
+const hiddenCount = Math.max(0, allTags.length - TOP_N);
+const PAGE_SIZE = 10;
 ---
 
 <BaseLayout title="블로그" description="백엔드 엔지니어링, 분산 시스템, Java, Redis에 관한 기술적 삽질과 학습의 기록입니다.">
+  <div class="page-fade">
   <div class="page-wrap blog-list-page">
-    <!-- List Header -->
+
     <div class="section-header" style="margin-bottom: 24px;">
       <span class="section-title" id="posts-count-label">전체 글 ({posts.length})</span>
       <button id="reset-filter-btn" class="section-link" style="display: none;">필터 초기화</button>
     </div>
 
-    <!-- Tags Chip Filter Container -->
-    <div class="tag-filter">
-      {allTags.map(tag => (
-        <button class="tag-chip-btn" data-tag={tag}>{tag}</button>
+    <div class="tag-filter" id="tag-filter">
+      {allTags.map((tag, i) => (
+        <button
+          class={`tag-chip-btn${i >= TOP_N ? ' tag-extra' : ''}`}
+          data-tag={tag}
+        >{tag}</button>
       ))}
+      {hiddenCount > 0 && (
+        <button class="tag-toggle-btn" id="tag-toggle-btn">
+          태그 더보기 +{hiddenCount}
+        </button>
+      )}
     </div>
 
-    <!-- Responsive Post Grid -->
     <div class="post-grid" id="post-grid">
-      {posts.map((post) => {
-        const postTags = post.data.tags || [];
-        return (
-          <div class="post-card-wrapper" data-tags={postTags.join(',')}>
-            <a href={`/blog/${post.slug}`} class="post-card">
-              {post.data.series && <div class="card-series">{post.data.series}</div>}
-              <h3 class="card-title">{post.data.title}</h3>
-              <p class="card-desc">{post.data.description}</p>
-              <div class="card-footer">
-                <div class="card-tags">
-                  {postTags.slice(0, 3).map(tag => (
-                    <span class="tag-chip">{tag}</span>
-                  ))}
-                </div>
-                <span class="card-date">{formatDate(post.data.pubDate)}</span>
+      {posts.map((post) => (
+        <div class="post-card-wrapper" data-tags={(post.data.tags || []).join(',')}>
+          <a href={`/blog/${post.slug}`} class="post-card">
+            {post.data.series && <div class="card-series">{post.data.series}</div>}
+            <h3 class="card-title">{post.data.title}</h3>
+            <p class="card-desc">{post.data.description}</p>
+            <div class="card-footer">
+              <div class="card-tags">
+                {(post.data.tags || []).slice(0, 3).map(tag => (
+                  <span class="tag-chip">{tag}</span>
+                ))}
               </div>
-            </a>
-          </div>
-        );
-      })}
-      
-      <!-- Empty Match Fallback -->
+              <span class="card-date">{formatDate(post.data.pubDate)}</span>
+            </div>
+          </a>
+        </div>
+      ))}
+
       <div id="no-posts-message" style="display: none; color: var(--text3); font-size: 14px; padding: 60px 0; text-align: center;">
         해당 태그의 글이 없습니다.
       </div>
     </div>
+
+    <div class="pagination" id="pagination"></div>
+
+  </div>
   </div>
 </BaseLayout>
 
-<script is:inline>
-  (function() {
+<script is:inline define:vars={{ PAGE_SIZE, hiddenCount }}>
+  (function () {
+    const allCards = Array.from(document.querySelectorAll('.post-card-wrapper'));
     const chips = document.querySelectorAll('.tag-chip-btn');
-    const cards = document.querySelectorAll('.post-card-wrapper');
     const countLabel = document.getElementById('posts-count-label');
     const resetBtn = document.getElementById('reset-filter-btn');
     const emptyMsg = document.getElementById('no-posts-message');
-    
+    const paginationEl = document.getElementById('pagination');
+    const tagToggleBtn = document.getElementById('tag-toggle-btn');
+
     let activeTags = [];
-    const totalCount = cards.length;
+    let currentPage = 1;
+    let tagsExpanded = false;
 
-    // Reset all filters
-    const resetFilters = () => {
-      activeTags = [];
-      chips.forEach(chip => chip.classList.remove('active'));
-      cards.forEach(card => card.style.display = 'block');
-      resetBtn.style.display = 'none';
-      emptyMsg.style.display = 'none';
-      countLabel.textContent = `전체 글 (${totalCount})`;
-    };
+    // ── Tag expand/collapse ──
+    if (tagToggleBtn) {
+      tagToggleBtn.addEventListener('click', () => {
+        tagsExpanded = !tagsExpanded;
+        document.querySelectorAll('.tag-extra').forEach(el => {
+          el.style.display = tagsExpanded ? '' : 'none';
+        });
+        tagToggleBtn.textContent = tagsExpanded
+          ? '접기 ↑'
+          : `태그 더보기 +${hiddenCount}`;
+      });
+    }
 
-    // Filter cards handler
-    const filterCards = () => {
-      let matchCount = 0;
+    // ── Pagination helpers ──
+    function getFiltered() {
+      if (!activeTags.length) return allCards;
+      return allCards.filter(card => {
+        const tags = (card.getAttribute('data-tags') || '').split(',');
+        return activeTags.every(t => tags.includes(t));
+      });
+    }
 
-      cards.forEach(card => {
-        const cardTagsStr = card.getAttribute('data-tags') || '';
-        const cardTags = cardTagsStr.split(',');
-        
-        // check if activeTags is a subset of cardTags
-        const matchesAll = activeTags.every(t => cardTags.includes(t));
-        
-        if (matchesAll) {
-          card.style.display = 'block';
-          matchCount++;
+    function getPageNums(current, total) {
+      if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+      if (current <= 4) return [1, 2, 3, 4, 5, '...', total];
+      if (current >= total - 3) return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+      return [1, '...', current - 1, current, current + 1, '...', total];
+    }
+
+    function renderPagination(current, total) {
+      if (total <= 1) { paginationEl.innerHTML = ''; return; }
+
+      const nums = getPageNums(current, total);
+      let html = `<button class="page-btn" id="pg-prev" ${current === 1 ? 'disabled' : ''}>←</button>`;
+      nums.forEach(n => {
+        if (n === '...') {
+          html += `<span class="page-ellipsis">···</span>`;
         } else {
-          card.style.display = 'none';
+          html += `<button class="page-btn${n === current ? ' active' : ''}" data-pg="${n}">${n}</button>`;
         }
       });
+      html += `<button class="page-btn" id="pg-next" ${current === total ? 'disabled' : ''}>→</button>`;
+      paginationEl.innerHTML = html;
 
-      // Update filtered post count text dynamically
-      if (activeTags.length > 0) {
-        countLabel.textContent = `필터링된 글 (${matchCount} / ${totalCount})`;
+      paginationEl.querySelector('#pg-prev').addEventListener('click', () => {
+        if (currentPage > 1) { currentPage--; render(); scrollUp(); }
+      });
+      paginationEl.querySelector('#pg-next').addEventListener('click', () => {
+        if (currentPage < total) { currentPage++; render(); scrollUp(); }
+      });
+      paginationEl.querySelectorAll('[data-pg]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentPage = +btn.getAttribute('data-pg');
+          render();
+          scrollUp();
+        });
+      });
+    }
+
+    function scrollUp() {
+      document.querySelector('.blog-list-page').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function render() {
+      const filtered = getFiltered();
+      const total = filtered.length;
+      const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      const start = (currentPage - 1) * PAGE_SIZE;
+      const visible = new Set(filtered.slice(start, start + PAGE_SIZE));
+
+      allCards.forEach(card => {
+        card.style.display = visible.has(card) ? 'block' : 'none';
+      });
+
+      if (activeTags.length) {
+        countLabel.textContent = `필터링된 글 (${total} / ${allCards.length})`;
         resetBtn.style.display = 'block';
       } else {
-        countLabel.textContent = `전체 글 (${totalCount})`;
+        countLabel.textContent = `전체 글 (${allCards.length})`;
         resetBtn.style.display = 'none';
       }
 
-      // Handle empty results display
-      if (matchCount === 0) {
-        emptyMsg.style.display = 'block';
-      } else {
-        emptyMsg.style.display = 'none';
-      }
-    };
+      emptyMsg.style.display = total === 0 ? 'block' : 'none';
+      renderPagination(currentPage, totalPages);
+    }
 
-    // Bind tag chips click listeners
     chips.forEach(chip => {
       chip.addEventListener('click', () => {
         const tag = chip.getAttribute('data-tag');
-        
         if (activeTags.includes(tag)) {
           activeTags = activeTags.filter(t => t !== tag);
           chip.classList.remove('active');
@@ -135,14 +183,23 @@ const formatDate = (date: Date) => {
           activeTags.push(tag);
           chip.classList.add('active');
         }
-
-        filterCards();
+        currentPage = 1;
+        render();
       });
     });
 
-    // Bind reset button
-    if (resetBtn) {
-      resetBtn.addEventListener('click', resetFilters);
-    }
+    resetBtn.addEventListener('click', () => {
+      activeTags = [];
+      chips.forEach(c => c.classList.remove('active'));
+      currentPage = 1;
+      render();
+    });
+
+    // Hide extra tags on init
+    document.querySelectorAll('.tag-extra').forEach(el => {
+      el.style.display = 'none';
+    });
+
+    render();
   })();
 </script>
