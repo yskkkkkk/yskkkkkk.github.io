@@ -18,6 +18,7 @@ export function formatDate(date: Date): string {
 
 const SERIES_SLUG_MAP: Record<string, string> = {
   'Redis 프로젝트 회고': 'redis-project',
+  '백기선 live-study': 'live-study',
 };
 
 export function seriesSlug(name: string): string {
