@@ -105,7 +105,6 @@ const seriesList = Array.from(seriesMap.values()).map(s => ({
             const readingTime = calculateReadingTime(post.body || '');
             return (
               <a href={`/blog/${post.slug}`} class="numbered-post">
-                <span class="post-num">{String(index + 1).padStart(2, '0')}</span>
                 <div class="post-info">
                   <span class="post-title">{post.data.title}</span>
                   <div class="post-meta-row">
