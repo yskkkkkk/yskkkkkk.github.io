@@ -131,7 +131,14 @@ img {
 .nav-links {
   display: flex;
   gap: 4px;
-  flex: 1;
+  flex-shrink: 0;
+}
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 .nav-link {
   padding: 6px 12px;
@@ -1300,11 +1307,13 @@ img {
     padding: 48px 0 60px;
   }
   .nav-links {
-    gap: 2px;
+    gap: 4px;
+    flex-shrink: 0;
   }
   .nav-link {
     padding: 6px 8px;
     font-size: 13.5px;
+    flex-shrink: 0;
   }
   .search-btn-label {
     display: none; /* Hide label on mobile to save space */
@@ -1314,26 +1323,34 @@ img {
   }
   .search-btn {
     padding: 6px 8px;
+    flex-shrink: 0;
   }
   .theme-toggle .toggle-label {
     display: none; /* Hide emoji on track to prevent overlapping issues */
+  }
+  .nav-actions {
+    gap: 8px;
+    flex-shrink: 0;
   }
 }
 
 @media (max-width: 480px) {
   .nav-inner {
-    padding: 0 16px;
-    gap: 10px;
+    padding: 0 12px;
+    gap: 8px;
   }
   .nav-logo {
-    font-size: 14px;
+    font-size: 13.5px;
+    flex-shrink: 0;
   }
   .nav-links {
-    flex: initial; /* Don't stretch links */
+    gap: 2px;
+    flex-shrink: 0;
   }
   .nav-link {
     padding: 4px 6px;
-    font-size: 13px;
+    font-size: 12.5px;
+    flex-shrink: 0;
   }
   .page-wrap {
     padding: 0 16px;

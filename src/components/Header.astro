@@ -19,21 +19,23 @@ const isActive = (path: string) => {
       <a href="/about" class:list={["nav-link", { active: isActive('/about') }]}>소개</a>
     </div>
     
-    <button class="search-btn" id="nav-search-btn" title="검색 (⌘K)">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"></circle>
-        <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
-      </svg>
-      <span class="search-btn-label">검색</span>
-      <kbd>⌘K</kbd>
-    </button>
-    
-    <button class="theme-toggle" id="theme-toggle" aria-label="테마 전환">
-      <span class="toggle-track">
-        <span class="toggle-thumb" id="theme-toggle-thumb"></span>
-      </span>
-      <span class="toggle-label" id="theme-toggle-label">🌙</span>
-    </button>
+    <div class="nav-actions">
+      <button class="search-btn" id="nav-search-btn" title="검색 (⌘K)">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.5"></circle>
+          <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+        </svg>
+        <span class="search-btn-label">검색</span>
+        <kbd>⌘K</kbd>
+      </button>
+      
+      <button class="theme-toggle" id="theme-toggle" aria-label="테마 전환">
+        <span class="toggle-track">
+          <span class="toggle-thumb" id="theme-toggle-thumb"></span>
+        </span>
+        <span class="toggle-label" id="theme-toggle-label">🌙</span>
+      </button>
+    </div>
   </div>
 </nav>
 
