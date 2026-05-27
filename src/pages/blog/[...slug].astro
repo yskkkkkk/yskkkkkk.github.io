@@ -21,10 +21,9 @@ const { Content, headings } = await post.render();
   updatedDate={post.data.updatedDate}
   heroImage={post.data.heroImage}
   tags={post.data.tags}
-  series={post.data.series}
-  slug={post.slug}
   headings={headings}
-  body={post.body}
+  slug={post.slug}
+  series={post.data.series}
 >
   <Content />
 </BlogPost>
