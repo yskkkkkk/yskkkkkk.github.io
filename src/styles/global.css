@@ -880,6 +880,26 @@ img {
   font-weight: 500;
 }
 
+/* ── Series Index Page ── */
+.series-index-page {
+  padding: 48px 0 100px;
+}
+.series-index-hero {
+  margin-bottom: 40px;
+}
+.series-index-title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.series-index-sub {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
 /* ── Series Detail Page ── */
 .series-page {
   padding: 48px 0 100px;

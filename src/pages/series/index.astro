@@ -1,9 +1,77 @@
 ---
+import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import { seriesSlug } from '../../lib/utils';
+import { SERIES_META, seriesSlug } from '../../lib/utils';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft && !!data.series);
-const seriesNames = [...new Set(allPosts.map(p => p.data.series as string))].sort();
-const first = seriesNames[0];
-return Astro.redirect(first ? `/series/${seriesSlug(first)}` : '/blog', 302);
+
+const formatYearMonth = (date: Date) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  return `${y}.${m}`;
+};
+
+// Build stats per series name (count + date range)
+const statsMap = new Map<string, { count: number; minDate: Date; maxDate: Date }>();
+allPosts.forEach(post => {
+  const name = post.data.series as string;
+  const d = new Date(post.data.pubDate);
+  if (!statsMap.has(name)) {
+    statsMap.set(name, { count: 1, minDate: d, maxDate: d });
+  } else {
+    const s = statsMap.get(name)!;
+    s.count += 1;
+    if (d < s.minDate) s.minDate = d;
+    if (d > s.maxDate) s.maxDate = d;
+  }
+});
+
+// Use SERIES_META order (Redis first, live-study second)
+const seriesList = Object.entries(SERIES_META).map(([name, meta]) => {
+  const stats = statsMap.get(name) ?? { count: 0, minDate: new Date(), maxDate: new Date() };
+  return {
+    name,
+    slug: meta.slug,
+    description: meta.description,
+    count: stats.count,
+    rangeLabel: `${formatYearMonth(stats.minDate)} – ${formatYearMonth(stats.maxDate)}`,
+  };
+}).filter(s => s.count > 0);
 ---
+
+<BaseLayout title="시리즈" description="주제별로 묶은 아티클 시리즈 목록입니다.">
+  <div class="page-fade">
+  <div class="page-wrap series-index-page">
+
+    <div class="series-index-hero">
+      <h1 class="series-index-title">아티클 시리즈</h1>
+      <p class="series-index-sub">주제별로 묶어 읽을 수 있는 연재 글 모음입니다.</p>
+    </div>
+
+    <div class="series-row">
+      {seriesList.map(series => (
+        <a href={`/series/${series.slug}`} class="series-card">
+          <div class="series-cover">
+            <div class="series-cover-icon">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                <path d="M3 9h18M9 21V9"></path>
+              </svg>
+            </div>
+            <span class="series-cover-label">시리즈</span>
+          </div>
+          <div class="series-body">
+            <h2 class="series-name">{series.name}</h2>
+            <p class="series-desc">{series.description}</p>
+            <div class="series-footer">
+              <span class="series-count">{series.count}편</span>
+              <span class="series-range">{series.rangeLabel}</span>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+
+  </div>
+  </div>
+</BaseLayout>
