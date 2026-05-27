@@ -1,9 +1,6 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
+import BaseLayout from './BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import { readingTime, formatDate, seriesSlug } from '../lib/utils';
 
 interface Props {
   title: string;
@@ -11,170 +8,246 @@ interface Props {
   pubDate: Date;
   updatedDate?: Date;
   heroImage?: string;
-  tags: string[];
+  tags?: string[];
+  headings?: { depth: number; slug: string; text: string }[];
+  slug?: string;
   series?: string;
-  slug: string;
-  headings: { depth: number; slug: string; text: string }[];
-  body: string;
 }
 
-const { title, description, pubDate, heroImage, tags, series, slug, headings, body } = Astro.props;
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  heroImage,
+  tags = [],
+  headings = [],
+  slug = '',
+  series
+} = Astro.props;
 
-const dateLabel = formatDate(pubDate);
-const mins = readingTime(body);
-const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
+// Format date helper
+const formatDate = (date: Date) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}.${m}.${d}`;
+};
 
-let seriesPosts: { slug: string; title: string; pubDate: Date }[] = [];
+// Fetch specific post body to estimate reading time
+const allPosts = await getCollection('blog');
+const currentPost = allPosts.find(p => p.slug === slug);
+const postBody = currentPost?.body || '';
+
+const calculateReadingTime = (body: string) => {
+  const cleanText = body.trim().replace(/[#*`_\[\]()\-]/g, '');
+  const words = cleanText.split(/\s+/).length;
+  return Math.ceil(words / 180) || 3;
+};
+
+const readingTime = calculateReadingTime(postBody);
+
+// Retrieve posts in same series
+let seriesPosts = [];
 if (series) {
-  const all = await getCollection('blog', ({ data }) => !data.draft && data.series === series);
-  seriesPosts = all
+  seriesPosts = allPosts
+    .filter(p => !p.data.draft && p.data.series === series)
     .sort((a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf())
-    .map(p => ({ slug: p.slug, title: p.data.title, pubDate: p.data.pubDate }));
+    .map((p, idx) => ({
+      title: p.data.title,
+      slug: p.slug,
+      order: idx + 1
+    }));
 }
 
-const seriesHref = series ? `/series/${seriesSlug(series)}` : '#';
+// Map series name to its slug
+const getSeriesSlug = (seriesName: string) => {
+  if (seriesName === 'Redis 프로젝트 회고') return 'redis-project';
+  return seriesName.toLowerCase().replace(/[^\w가-힣\s]/g, '').replace(/\s+/g, '-');
+};
+
+const seriesSlug = series ? getSeriesSlug(series) : '';
+const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 ---
 
-<!doctype html>
-<html lang="ko">
-  <head>
-    <BaseHead title={title} description={description} image={heroImage} />
-  </head>
-  <body data-slug={slug}>
-    <div class="reading-progress" id="reading-progress"></div>
-    <Header />
-    <main style="flex: 1;">
-      <div class="page-fade">
-        <div class="page-wrap post-page">
-          <!-- Breadcrumb -->
-          <div class="breadcrumb">
-            <a href="/">홈</a>
-            <span>›</span>
-            <a href="/blog">블로그</a>
+<BaseLayout title={title} description={description}>
+  <!-- Reading Progress Bar -->
+  <div class="reading-progress" id="reading-progress-bar"></div>
+
+  <div class="page-wrap post-page">
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumb">
+      <a href="/">홈</a>
+      <span>›</span>
+      <a href="/blog">블로그</a>
+      {series && (
+        <span>›</span>
+        <a href={`/series/${seriesSlug}`}>{series}</a>
+      )}
+    </nav>
+
+    <!-- 2-Column Responsive Layout -->
+    <div class="post-layout">
+      <!-- Main Content Area -->
+      <article class="post-main">
+        <header>
+          <h1 class="post-headline">{title}</h1>
+          <div class="post-meta">
+            <span class="meta-date">{formatDate(pubDate)}</span>
+            <span class="meta-read">{readingTime}분 읽기</span>
             {series && (
-              <>
-                <span>›</span>
-                <a href={seriesHref}>{series}</a>
-              </>
+              <a href={`/series/${seriesSlug}`} class="meta-series-btn">{series}</a>
             )}
+            <div class="meta-tags">
+              {tags.map(tag => (
+                <span class="tag-chip">{tag}</span>
+              ))}
+            </div>
           </div>
+        </header>
 
-          <div class="post-layout">
-            <article class="post-main">
-              <h1 class="post-headline">{title}</h1>
-              <div class="post-meta">
-                <span class="meta-date">{dateLabel}</span>
-                <span class="meta-read">{mins}분 읽기</span>
-                {series && (
-                  <a href={seriesHref} class="meta-series-pill">{series}</a>
-                )}
-                <div class="meta-tags">
-                  {tags.slice(0, 4).map(t => (
-                    <span class="tag-chip">{t}</span>
-                  ))}
-                </div>
-              </div>
+        {heroImage && (
+          <img src={heroImage} alt={title} style="width:100%; margin-bottom:32px; border:1px solid var(--border);" />
+        )}
 
-              <div class="post-content">
-                <slot />
-              </div>
-
-              {seriesPosts.length > 0 && (
-                <div class="series-nav-bar">
-                  <span class="series-nav-label">시리즈</span>
-                  <span class="series-nav-title">{series}</span>
-                  <div class="series-posts-list">
-                    {seriesPosts.map((sp, i) => (
-                      <a
-                        href={`/blog/${sp.slug}`}
-                        class:list={['series-post-item', { current: sp.slug === slug }]}
-                      >
-                        <span class="series-post-order">{String(i + 1).padStart(2, '0')}</span>
-                        <span>{sp.title}</span>
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </article>
-
-            {tocHeadings.length > 0 && (
-              <aside>
-                <nav class="toc" id="toc">
-                  <div class="toc-title">목차</div>
-                  {tocHeadings.map(h => (
-                    <a
-                      href={`#${h.slug}`}
-                      class:list={['toc-item', { 'depth-3': h.depth === 3 }]}
-                      data-toc={h.slug}
-                    >
-                      {h.text}
-                    </a>
-                  ))}
-                </nav>
-              </aside>
-            )}
-          </div>
+        <!-- Main Body Wrapper -->
+        <div class="post-content" id="post-content-container">
+          <slot />
         </div>
-      </div>
-    </main>
-    <Footer />
 
-    <script is:inline>
-      // Reading progress
-      var progressBar = document.getElementById('reading-progress');
-      if (progressBar) {
-        window.addEventListener('scroll', function () {
-          var docH = document.documentElement.scrollHeight - window.innerHeight;
-          var pct = docH > 0 ? (window.pageYOffset / docH) * 100 : 0;
-          progressBar.style.width = Math.min(100, pct) + '%';
-        }, { passive: true });
-      }
+        <!-- Bottom Series Navigation Bar -->
+        {seriesPosts.length > 0 && (
+          <div class="series-nav-bar">
+            <span class="series-nav-label">시리즈</span>
+            <a href={`/series/${seriesSlug}`} class="series-nav-title">{series}</a>
+            <div class="series-posts-list">
+              {seriesPosts.map(sp => (
+                <a href={`/blog/${sp.slug}`} class:list={["series-post-item", { current: sp.slug === slug }]}>
+                  <span class="series-post-order">{String(sp.order).padStart(2, '0')}</span>
+                  <span>{sp.title}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </article>
 
-      // TOC highlight via IntersectionObserver
-      var tocItems = document.querySelectorAll('[data-toc]');
-      if (tocItems.length) {
-        var headingEls = Array.from(tocItems).map(function (el) {
-          return document.getElementById(el.dataset.toc);
-        }).filter(Boolean);
+      <!-- TOC Sticky Sidebar (Hidden on mobile) -->
+      {tocHeadings.length > 0 && (
+        <aside>
+          <nav class="toc" id="toc-sidebar">
+            <div class="toc-title">목차</div>
+            {tocHeadings.map(h => (
+              <button class:list={["toc-item", `h${h.depth}`]} data-id={h.slug}>
+                {h.text}
+              </button>
+            ))}
+          </nav>
+        </aside>
+      )}
+    </div>
+  </div>
+</BaseLayout>
 
-        var observer = new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-              tocItems.forEach(function (el) { el.classList.remove('active'); });
-              var id = entry.target.id;
-              var active = document.querySelector('[data-toc="' + id + '"]');
-              if (active) active.classList.add('active');
+<!-- Client Side TOC, Progress, Hash Syncing Script -->
+<script is:inline>
+  (function() {
+    // 1. Reading Progress Bar Controller
+    const progressBar = document.getElementById('reading-progress-bar');
+    if (progressBar) {
+      const handleProgress = () => {
+        const el = document.documentElement;
+        const scrolled = el.scrollTop;
+        const total = el.scrollHeight - el.clientHeight;
+        const pct = total > 0 ? Math.min(100, (scrolled / total) * 100) : 0;
+        progressBar.style.width = pct + '%';
+      };
+      window.addEventListener('scroll', handleProgress, { passive: true });
+      handleProgress(); // Initial run
+    }
+
+    // 2. TOC Highlighting & Scrolling & URL Hash syncing
+    const tocSidebar = document.getElementById('toc-sidebar');
+    if (tocSidebar) {
+      const tocItems = tocSidebar.querySelectorAll('.toc-item');
+      const headingElements = Array.from(tocItems).map(item => {
+        const id = item.getAttribute('data-id');
+        return document.getElementById(id);
+      }).filter(Boolean);
+
+      if (headingElements.length > 0) {
+        // Highlighting active heading using IntersectionObserver
+        let activeId = '';
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(e => {
+            if (e.isIntersecting) {
+              activeId = e.target.id;
+              updateActiveTOC();
             }
           });
         }, { rootMargin: '-20% 0px -70% 0px' });
 
-        headingEls.forEach(function (el) { observer.observe(el); });
-      }
+        headingElements.forEach(el => observer.observe(el));
 
-      // Scroll position → URL hash
-      var postSlug = document.body.dataset.slug;
-      var headingNodes = document.querySelectorAll('.post-content h2, .post-content h3');
-      var scrollTimer;
-      window.addEventListener('scroll', function () {
-        clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(function () {
-          var current = '';
-          headingNodes.forEach(function (h) {
-            if (h.getBoundingClientRect().top < 120) current = h.id;
+        const updateActiveTOC = () => {
+          tocItems.forEach(item => {
+            if (item.getAttribute('data-id') === activeId) {
+              item.classList.add('active');
+            } else {
+              item.classList.remove('active');
+            }
           });
-          if (current) history.replaceState(null, '', '/blog/' + postSlug + '#' + current);
-        }, 350);
-      }, { passive: true });
+        };
 
-      // Scroll to hash on load
-      var hash = window.location.hash.slice(1);
-      if (hash) {
-        setTimeout(function () {
-          var el = document.getElementById(hash);
-          if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - 84 });
-        }, 100);
+        // Click handler for smooth scrolling to headings (offset 84px)
+        tocItems.forEach(item => {
+          item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const id = item.getAttribute('data-id');
+            const targetEl = document.getElementById(id);
+            if (targetEl) {
+              const top = targetEl.getBoundingClientRect().top + window.pageYOffset - 84;
+              window.scrollTo({ top, behavior: 'smooth' });
+              
+              // Direct URL Hash update immediately on click
+              history.replaceState(null, '', '#' + id);
+            }
+          });
+        });
+
+        // Debounced scroll hash synchronizer (350ms)
+        let hashSyncTimer;
+        const handleHashSync = () => {
+          clearTimeout(hashSyncTimer);
+          hashSyncTimer = setTimeout(() => {
+            let topmostHeading = '';
+            headingElements.forEach(h => {
+              const rect = h.getBoundingClientRect();
+              if (rect.top < 120) {
+                topmostHeading = h.id;
+              }
+            });
+            if (topmostHeading) {
+              history.replaceState(null, '', '#' + topmostHeading);
+            }
+          }, 350);
+        };
+        window.addEventListener('scroll', handleHashSync, { passive: true });
+
+        // Scroll to heading on initial mount if hash is present
+        if (window.location.hash) {
+          const hashId = window.location.hash.replace('#', '');
+          const targetEl = document.getElementById(hashId);
+          if (targetEl) {
+            setTimeout(() => {
+              const top = targetEl.getBoundingClientRect().top + window.pageYOffset - 84;
+              window.scrollTo({ top });
+              activeId = hashId;
+              updateActiveTOC();
+            }, 150);
+          }
+        }
       }
-    </script>
-  </body>
-</html>
+    }
+  })();
+</script>

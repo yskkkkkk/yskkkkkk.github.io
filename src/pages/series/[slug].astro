@@ -1,57 +1,95 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import { formatDate, readingTime, seriesSlug } from '../../lib/utils';
 
+// Dynamic routing config
 export async function getStaticPaths() {
-  const allPosts = await getCollection('blog', ({ data }) => !data.draft && !!data.series);
-  const seriesNames = [...new Set(allPosts.map(p => p.data.series as string))];
-  return seriesNames.map(name => ({
-    params: { slug: seriesSlug(name) },
-    props: { seriesName: name },
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  
+  // Find all unique series
+  const seriesSet = new Set();
+  posts.forEach(post => {
+    if (post.data.series) {
+      seriesSet.add(post.data.series);
+    }
+  });
+
+  const getSeriesSlug = (seriesName: string) => {
+    if (seriesName === 'Redis 프로젝트 회고') return 'redis-project';
+    return seriesName.toLowerCase().replace(/[^\w가-힣\s]/g, '').replace(/\s+/g, '-');
+  };
+
+  return Array.from(seriesSet).map(seriesName => ({
+    params: { slug: getSeriesSlug(seriesName as string) },
+    props: { seriesName }
   }));
 }
 
-interface Props {
-  seriesName: string;
-}
-
 const { seriesName } = Astro.props;
+
+// Series Metadata mapping
+const SERIES_METADATA: Record<string, { description: string }> = {
+  'Redis 프로젝트 회고': {
+    description: '실제 대규모 서비스에 Redis 캐시를 도입하면서 겪은 기술적 문제들과 해결 과정. 분산 캐시 동기화, 동시성 이슈, 대규모 장애 대응까지.'
+  }
+};
+
+const meta = SERIES_METADATA[seriesName] || {
+  description: '시리즈 아티클 모음입니다.'
+};
+
+// Fetch and sort posts belonging to this series ascending (chronological reading order)
 const allPosts = await getCollection('blog', ({ data }) => !data.draft && data.series === seriesName);
-const sortedPosts = allPosts.sort((a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf());
+const seriesPosts = allPosts.sort((a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf());
+
+// Helper to format date as YYYY.MM.DD
+const formatDate = (date: Date) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}.${m}.${d}`;
+};
+
+// Estimated reading time calculator
+const calculateReadingTime = (body: string) => {
+  const cleanText = body.trim().replace(/[#*`_\[\]()\-]/g, '');
+  const words = cleanText.split(/\s+/).length;
+  return Math.ceil(words / 180) || 3;
+};
 ---
 
-<BaseLayout title={seriesName}>
-  <div class="page-fade">
-    <div class="page-wrap series-page">
-      <div class="series-hero">
-        <div class="series-hero-label">아티클 시리즈</div>
-        <h1 class="series-hero-title">{seriesName}</h1>
-        <p class="series-hero-desc">
-          총 {sortedPosts.length}편 · {formatDate(sortedPosts[0]?.data.pubDate)} ~ {formatDate(sortedPosts[sortedPosts.length - 1]?.data.pubDate)}
-        </p>
-      </div>
+<BaseLayout title={seriesName} description={meta.description}>
+  <div class="page-wrap series-page">
+    <!-- Series Hero Banner -->
+    <div class="series-hero">
+      <div class="series-hero-label">아티클 시리즈</div>
+      <h1 class="series-hero-title">{seriesName}</h1>
+      <p class="series-hero-desc">{meta.description}</p>
+    </div>
 
-      <div class="section-header">
-        <span class="section-title">총 {sortedPosts.length}편</span>
-        <a href="/blog" class="section-link">← 블로그 목록</a>
-      </div>
+    <!-- Count Divider -->
+    <div class="section-header">
+      <span class="section-title">총 {seriesPosts.length}편</span>
+    </div>
 
-      <div class="series-posts-timeline">
-        {sortedPosts.map((post, i) => (
+    <!-- Timeline of Posts -->
+    <div class="series-posts-timeline">
+      {seriesPosts.map((post, index) => {
+        const readingTime = calculateReadingTime(post.body || '');
+        return (
           <a href={`/blog/${post.slug}`} class="timeline-item">
-            <span class="timeline-num">{String(i + 1).padStart(2, '0')}</span>
+            <span class="timeline-num">{String(index + 1).padStart(2, '0')}</span>
             <div class="timeline-body">
               <div class="timeline-title">{post.data.title}</div>
               <p class="timeline-desc">{post.data.description}</p>
               <div class="timeline-meta">
                 <span class="timeline-date">{formatDate(post.data.pubDate)}</span>
-                <span class="timeline-date">· {readingTime(post.body)}분</span>
+                <span class="timeline-date">· {readingTime}분 읽기</span>
               </div>
             </div>
           </a>
-        ))}
-      </div>
+        );
+      })}
     </div>
   </div>
 </BaseLayout>

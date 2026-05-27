@@ -1,95 +1,148 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import { formatDate, seriesSlug } from '../../lib/utils';
 
+// Fetch non-draft posts, sorted by date descending
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
-const allTags = [...new Set(posts.flatMap(p => p.data.tags))].sort();
+// Extract all unique tags, sorted alphabetically
+const allTags = Array.from(
+  new Set(posts.flatMap(post => post.data.tags || []))
+).sort();
+
+// Helper to format date as YYYY.MM.DD
+const formatDate = (date: Date) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}.${m}.${d}`;
+};
 ---
 
-<BaseLayout title="블로그">
-  <div class="page-fade">
-    <div class="page-wrap blog-list-page">
-      <div class="section-header" style="margin-bottom: 24px;">
-        <span class="section-title">전체 글 ({posts.length})</span>
-        <button class="section-link" id="reset-filter" style="display:none;">필터 초기화</button>
-      </div>
+<BaseLayout title="블로그" description="백엔드 엔지니어링, 분산 시스템, Java, Redis에 관한 기술적 삽질과 학습의 기록입니다.">
+  <div class="page-wrap blog-list-page">
+    <!-- List Header -->
+    <div class="section-header" style="margin-bottom: 24px;">
+      <span class="section-title" id="posts-count-label">전체 글 ({posts.length})</span>
+      <button id="reset-filter-btn" class="section-link" style="display: none;">필터 초기화</button>
+    </div>
 
-      <!-- Tag Filter -->
-      <div class="tag-filter" id="tag-filter">
-        {allTags.map(tag => (
-          <button class="tag-chip-btn" data-tag={tag}>{tag}</button>
-        ))}
-      </div>
+    <!-- Tags Chip Filter Container -->
+    <div class="tag-filter">
+      {allTags.map(tag => (
+        <button class="tag-chip-btn" data-tag={tag}>{tag}</button>
+      ))}
+    </div>
 
-      <!-- Post Cards -->
-      <div class="post-grid" id="post-grid">
-        {posts.map(post => (
-          <a
-            href={`/blog/${post.slug}`}
-            class="post-card"
-            data-tags={post.data.tags.join(',')}
-          >
-            {post.data.series && (
-              <span class="card-series">{post.data.series}</span>
-            )}
-            <div class="card-title">{post.data.title}</div>
-            <p class="card-desc">{post.data.description}</p>
-            <div class="card-footer">
-              <div class="card-tags">
-                {post.data.tags.slice(0, 4).map(t => (
-                  <span class="tag-chip">{t}</span>
-                ))}
+    <!-- Responsive Post Grid -->
+    <div class="post-grid" id="post-grid">
+      {posts.map((post) => {
+        const postTags = post.data.tags || [];
+        return (
+          <div class="post-card-wrapper" data-tags={postTags.join(',')}>
+            <a href={`/blog/${post.slug}`} class="post-card">
+              {post.data.series && <div class="card-series">{post.data.series}</div>}
+              <h3 class="card-title">{post.data.title}</h3>
+              <p class="card-desc">{post.data.description}</p>
+              <div class="card-footer">
+                <div class="card-tags">
+                  {postTags.slice(0, 3).map(tag => (
+                    <span class="tag-chip">{tag}</span>
+                  ))}
+                </div>
+                <span class="card-date">{formatDate(post.data.pubDate)}</span>
               </div>
-              <span class="card-date">{formatDate(post.data.pubDate)}</span>
-            </div>
-          </a>
-        ))}
-      </div>
-
-      <p id="no-results" style="display:none; color: var(--text3); font-size: 14px; padding: 40px 0; text-align: center;">
+            </a>
+          </div>
+        );
+      })}
+      
+      <!-- Empty Match Fallback -->
+      <div id="no-posts-message" style="display: none; color: var(--text3); font-size: 14px; padding: 60px 0; text-align: center;">
         해당 태그의 글이 없습니다.
-      </p>
+      </div>
     </div>
   </div>
 </BaseLayout>
 
 <script is:inline>
-  (function () {
-    var activeTags = [];
-    var chips = document.querySelectorAll('.tag-chip-btn');
-    var cards = document.querySelectorAll('.post-card');
-    var resetBtn = document.getElementById('reset-filter');
-    var noResults = document.getElementById('no-results');
+  (function() {
+    const chips = document.querySelectorAll('.tag-chip-btn');
+    const cards = document.querySelectorAll('.post-card-wrapper');
+    const countLabel = document.getElementById('posts-count-label');
+    const resetBtn = document.getElementById('reset-filter-btn');
+    const emptyMsg = document.getElementById('no-posts-message');
+    
+    let activeTags = [];
+    const totalCount = cards.length;
 
-    function filter() {
-      var visible = 0;
-      cards.forEach(function (card) {
-        var tags = (card.dataset.tags || '').split(',');
-        var show = activeTags.length === 0 || activeTags.every(function (t) { return tags.includes(t); });
-        card.style.display = show ? '' : 'none';
-        if (show) visible++;
-      });
-      noResults.style.display = visible === 0 ? 'block' : 'none';
-      resetBtn.style.display = activeTags.length > 0 ? '' : 'none';
-    }
-
-    chips.forEach(function (chip) {
-      chip.addEventListener('click', function () {
-        var tag = chip.dataset.tag;
-        var idx = activeTags.indexOf(tag);
-        if (idx === -1) { activeTags.push(tag); chip.classList.add('active'); }
-        else { activeTags.splice(idx, 1); chip.classList.remove('active'); }
-        filter();
-      });
-    });
-
-    resetBtn?.addEventListener('click', function () {
+    // Reset all filters
+    const resetFilters = () => {
       activeTags = [];
-      chips.forEach(function (c) { c.classList.remove('active'); });
-      filter();
+      chips.forEach(chip => chip.classList.remove('active'));
+      cards.forEach(card => card.style.display = 'block');
+      resetBtn.style.display = 'none';
+      emptyMsg.style.display = 'none';
+      countLabel.textContent = `전체 글 (${totalCount})`;
+    };
+
+    // Filter cards handler
+    const filterCards = () => {
+      let matchCount = 0;
+
+      cards.forEach(card => {
+        const cardTagsStr = card.getAttribute('data-tags') || '';
+        const cardTags = cardTagsStr.split(',');
+        
+        // check if activeTags is a subset of cardTags
+        const matchesAll = activeTags.every(t => cardTags.includes(t));
+        
+        if (matchesAll) {
+          card.style.display = 'block';
+          matchCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Update filtered post count text dynamically
+      if (activeTags.length > 0) {
+        countLabel.textContent = `필터링된 글 (${matchCount} / ${totalCount})`;
+        resetBtn.style.display = 'block';
+      } else {
+        countLabel.textContent = `전체 글 (${totalCount})`;
+        resetBtn.style.display = 'none';
+      }
+
+      // Handle empty results display
+      if (matchCount === 0) {
+        emptyMsg.style.display = 'block';
+      } else {
+        emptyMsg.style.display = 'none';
+      }
+    };
+
+    // Bind tag chips click listeners
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const tag = chip.getAttribute('data-tag');
+        
+        if (activeTags.includes(tag)) {
+          activeTags = activeTags.filter(t => t !== tag);
+          chip.classList.remove('active');
+        } else {
+          activeTags.push(tag);
+          chip.classList.add('active');
+        }
+
+        filterCards();
+      });
     });
+
+    // Bind reset button
+    if (resetBtn) {
+      resetBtn.addEventListener('click', resetFilters);
+    }
   })();
 </script>
