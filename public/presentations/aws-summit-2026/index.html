@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWS Seoul Summit 2026 참관 공유회</title>
+  
+  <!-- Reveal.js CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+  
+  <!-- Google Fonts (Outfit & Noto Sans KR) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+KR:wght@300;400;700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Chart.js & Three.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <style>
+    /* ==========================================
+       PREMIUM DESIGN SYSTEM
+       ========================================== */
+    :root {
+      --bg-dark: #0b0c15;
+      --bg-card: rgba(18, 20, 38, 0.72);
+      --border-card: rgba(255, 255, 255, 0.08);
+      --aws-orange: #ff9900;
+      --neon-violet: #8c52ff;
+      --neon-blue: #00f0ff;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+    }
+
+    body {
+      font-family: 'Outfit', 'Noto Sans KR', 'Inter', sans-serif !important;
+      background-color: var(--bg-dark) !important;
+      color: var(--text-main) !important;
+      overflow: hidden;
+    }
+
+    /* Ambient Animated Aurora Background */
+    .aurora-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      overflow: hidden;
+      pointer-events: none;
+      background: radial-gradient(circle at 10% 25%, rgba(140, 82, 255, 0.1) 0%, transparent 40%),
+                  radial-gradient(circle at 90% 75%, rgba(0, 240, 255, 0.08) 0%, transparent 45%),
+                  radial-gradient(circle at 50% 50%, rgba(255, 153, 0, 0.06) 0%, transparent 50%);
+      filter: blur(80px);
+      animation: auroraMove 20s infinite alternate ease-in-out;
+    }
+
+    @keyframes auroraMove {
+      0% { transform: scale(1) translate(0, 0); }
+      50% { transform: scale(1.08) translate(2%, 4%); }
+      100% { transform: scale(0.96) translate(-2%, -3%); }
+    }
+
+    /* Reveal.js overrides */
+    .reveal {
+      z-index: 2;
+    }
+
+    .reveal .slides {
+      text-align: left !important;
+    }
+
+    .reveal .progress {
+      height: 6px !important;
+      background: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .reveal .progress span {
+      background: linear-gradient(90deg, var(--aws-orange), var(--neon-violet), var(--neon-blue)) !important;
+      box-shadow: 0 0 12px var(--aws-orange);
+      transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .reveal .controls button {
+      color: var(--aws-orange) !important;
+    }
+
+    /* Glassmorphism Slide Cards */
+    .slide-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-card);
+      border-radius: 24px;
+      padding: 30px 44px; /* 높이 과부하 방지 위해 패딩 다이어트 적용 */
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45),
+                  inset 0 1px 1px rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+      max-height: 630px; /* 전체 슬라이드 영역 이탈 원천 차단 */
+      box-sizing: border-box;
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--aws-orange), var(--neon-violet), var(--neon-blue));
+    }
+
+    /* Typography */
+    h1.slide-title {
+      font-size: 2.6rem !important; /* 폰트 다운사이징으로 여유 세로폭 확보 */
+      font-weight: 800 !important;
+      line-height: 1.25 !important;
+      margin-bottom: 16px !important;
+      background: linear-gradient(135deg, #ffffff 40%, #cbd5e1 90%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -1px;
+    }
+
+    .slide-subtitle {
+      font-size: 1.15rem;
+      color: var(--aws-orange);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .text-gradient {
+      background: linear-gradient(90deg, var(--aws-orange), #ffc837) !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+    }
+
+    .text-violet-gradient {
+      background: linear-gradient(90deg, var(--neon-violet), #c850c0) !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+    }
+
+    p.slide-desc {
+      font-size: 1.08rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+    }
+
+    /* Morphing Cards */
+    .morph-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 14px;
+      padding: 18px;
+      transition: all 0.4s ease;
+    }
+
+    .morph-card.active {
+      background: rgba(255, 153, 0, 0.06);
+      border-color: rgba(255, 153, 0, 0.25);
+      box-shadow: 0 10px 30px rgba(255, 153, 0, 0.08);
+    }
+
+    .morph-card h3 {
+      font-size: 1.25rem !important;
+      font-weight: 700 !important;
+      margin-bottom: 8px !important;
+      color: #fff !important;
+    }
+
+    /* Single Photo Placeholder with Max-Height constraints */
+    .photo-placeholder {
+      aspect-ratio: 16 / 10;
+      max-height: 380px; /* 높이 초과로 인한 레이아웃 깨짐 제어 */
+      background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .photo-placeholder:hover {
+      border-color: var(--aws-orange);
+      background: linear-gradient(135deg, rgba(255, 153, 0, 0.04), rgba(255,255,255,0.01));
+    }
+
+    .photo-placeholder span.icon {
+      font-size: 2rem;
+      margin-bottom: 6px;
+    }
+
+    /* Multi Photo Gallery Grid with Max-Height constraints */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      max-height: 380px;
+      overflow: hidden;
+    }
+
+    .gallery-item {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+    
+    .gallery-item:hover {
+      border-color: var(--aws-orange);
+      background: rgba(255, 153, 0, 0.03);
+    }
+
+    /* Highlight Badges */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .badge.orange {
+      background: rgba(255, 153, 0, 0.12);
+      border-color: rgba(255, 153, 0, 0.25);
+      color: var(--aws-orange);
+    }
+
+    .badge.violet {
+      background: rgba(140, 82, 255, 0.12);
+      border-color: rgba(140, 82, 255, 0.25);
+      color: #b388ff;
+    }
+
+    /* 핀볼 단독 게임 외부연결 버튼 스타일 */
+    .pinball-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 28px;
+      background: linear-gradient(90deg, var(--aws-orange), var(--neon-violet));
+      border-radius: 12px;
+      color: #fff !important;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 4px 20px rgba(255, 153, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      cursor: pointer;
+      margin-top: 18px;
+    }
+
+    .pinball-link-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(255, 153, 0, 0.45), 0 0 10px rgba(140, 82, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.35);
+    }
+
+    /* Bullets */
+    ul.custom-bullets {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    ul.custom-bullets li {
+      position: relative;
+      padding-left: 20px;
+      margin-bottom: 10px;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #d1d5db;
+    }
+
+    ul.custom-bullets li::before {
+      content: "✦";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--aws-orange);
+      font-size: 0.95rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient background aurora animations -->
+  <div class="aurora-bg"></div>
+
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- ==========================================
+           SLIDE 1: COVER
+           ========================================== -->
+      <section data-auto-animate>
+        <div class="slide-container">
+          <div class="glass-card" style="padding: 55px 75px;">
+            <div class="slide-subtitle" data-id="subtitle">
+              <span class="badge orange">CONFERENCE SHARE</span> AWS SEOUL SUMMIT 2026
+            </div>
+            <h1 class="slide-title" data-id="title" style="font-size: 3.8rem !important; margin-bottom: 8px !important;">
+              AWS Summit <span class="text-gradient">Seoul 2026</span>
+            </h1>
+            <h2 style="font-size: 2.1rem !important; font-weight: 300 !important; color: #a1a1aa; margin-bottom: 40px;">
+              클라우드와 AI 가속화의 현장, 생생한 참관 기록
+            </h2>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 28px;">
+              <div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin: 0;">PRESENTER</p>
+                <h4 style="font-size: 1.25rem; font-weight: 600; margin: 4px 0 0 0; color: #fff;">류대성 (Daesung Ryu)</h4>
+              </div>
+              <div style="text-align: right;">
+                <p style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin: 0;">DATE</p>
+                <h4 style="font-size: 1.25rem; font-weight: 600; margin: 4px 0 0 0; color: #fff;">2026년 5월 29일</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 2: OVERVIEW
+           ========================================== -->
+      <section data-auto-animate>
+        <div class="slide-container">
+          <div class="glass-card">
+            <div class="slide-subtitle" data-id="subtitle">
+              <span class="badge orange">OVERVIEW</span> 첫 참가의 강렬한 설렘
+            </div>
+            <h1 class="slide-title" data-id="title">코엑스를 집어삼킨 역대급 스케일</h1>
+            
+            <div class="grid-2">
+              <div>
+                <p class="slide-desc" style="font-size: 1.15rem; line-height: 1.6;">
+                  처음으로 서밋에 참가하게 되어 무척 설레는 맘으로 향했습니다. 기존에 흔히 보아왔던 단순 기업 박람회의 스케일과는 차원이 달랐습니다.
+                </p>
+                <ul class="custom-bullets" style="margin-top: 14px;">
+                  <li><strong>공간의 압도감:</strong> 특정 층의 홀 1개만 빌리던 일반적인 규모와 달리, 무려 <strong>코엑스 3층 전체와 2층, 1층 일부</strong>를 모조리 뒤덮은 거대한 위용에 깊이 압도되었습니다.</li>
+                  <li><strong>AI Day 집중 참관:</strong> 5월 20일~21일 양일 중, 가장 트렌디한 엔지니어링 패러다임이 격돌하는 <strong>21일 AI Day</strong>에 참가하여 혁신을 눈으로 확인했습니다.</li>
+                </ul>
+              </div>
+              
+              <!-- 7초 영상 1개 + 사진 2개 레이아웃 -->
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <!-- 7초 동영상 연결 완비 -->
+                <video src="./coex_video.mp4" autoplay loop muted playsinline style="width: 100%; border-radius: 16px; height: 180px; object-fit: cover;"></video>
+                <!-- 하단 2장 사진 가로 나열 -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; height: 120px;">
+                  <div class="gallery-item">
+                    <img src="./coex_pic1.jpeg" style="width: 100%; height: 100%; object-fit: cover;" alt="코엑스 전경">
+                  </div>
+                  <div class="gallery-item">
+                    <img src="./coex_pic2.jpeg" style="width: 100%; height: 100%; object-fit: cover;" alt="참관 인증">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 3: 3 KEYWORDS
+           ========================================== -->
+      <section data-auto-animate>
+        <div class="slide-container">
+          <div class="glass-card">
+            <div class="slide-subtitle" data-id="subtitle">
+              <span class="badge orange">9 TRACKS</span> 거대 기술 생태계의 분류
+            </div>
+            <h1 class="slide-title" data-id="title">9개 트랙, 세상의 모든 클라우드 지식</h1>
+            
+            <div class="grid-2">
+              <div>
+                <p class="slide-desc" style="font-size: 1.05rem; line-height: 1.55; margin-bottom: 12px;">
+                  현장은 9개의 거대한 트랙으로 나뉘어 AI 모델, 데이터, 에이전트, 소프트웨어 엔지니어링, 인프라, 보안 등 모든 IT 분야가 정교하게 톱니바퀴처럼 굴러가고 있었습니다.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                  <div class="morph-card active" data-id="card-ai" style="padding: 12px 16px;">
+                    <h3 data-id="title-ai" style="font-size: 1.15rem !important; margin-bottom: 2px !important;">1. AI 모델과 장기 기억</h3>
+                    <p style="font-size: 0.85rem; color: #d1d5db; line-height: 1.3; margin: 0;">LLM에 영구적인 장기 기억을 심는 고도화된 스토리지 설계.</p>
+                  </div>
+                  <div class="morph-card" data-id="card-infra" style="background: rgba(255,255,255,0.02); padding: 12px 16px;">
+                    <h3 data-id="title-infra" style="font-size: 1.15rem !important; margin-bottom: 2px !important;">2. 아키텍처와 제품 구성</h3>
+                    <p style="font-size: 0.85rem; color: #d1d5db; line-height: 1.3; margin: 0;">방대한 AWS 제품군 속에서 최적의 실무 서버 구성을 설계.</p>
+                  </div>
+                  <div class="morph-card" data-id="card-sec" style="background: rgba(255,255,255,0.02); padding: 12px 16px;">
+                    <h3 data-id="title-sec" style="font-size: 1.15rem !important; margin-bottom: 2px !important;">3. AI Security Gateway</h3>
+                    <p style="font-size: 0.85rem; color: #d1d5db; line-height: 1.3; margin: 0;">수많은 AI 보안 위협을 한곳으로 묶어 방어하는 통제 기술.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 사진 1장 연동 완비 (우측 끝 여백까지 시원하게 확장) -->
+              <div class="photo-placeholder" style="width: 100%; height: 350px; border: none; background: transparent;">
+                <img src="./tracks_map.jpeg" style="width: 100%; height: 100%; object-fit: cover; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" alt="9개 트랙 안내 맵">
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 4 (NEW): THE PARADOX OF NATURAL LANGUAGE
+           ========================================== -->
+      <section data-auto-animate>
+        <div class="slide-container">
+          <div class="glass-card" style="padding: 36px 50px;">
+            <div class="slide-subtitle" data-id="subtitle">
+              <span class="badge orange">PHILOSOPHICAL BRIDGE 01</span> 자연어의 한계와 역설
+            </div>
+            <h1 class="slide-title" data-id="title" style="background: linear-gradient(90deg, #fff, var(--aws-orange)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+              자연어의 한계: AI와의 대화에서 마주한 기억의 균열
+            </h1>
+            
+            <p class="slide-desc" style="font-size: 1.15rem; line-height: 1.7; margin-bottom: 24px;">
+              인간과 컴퓨터, 그리고 AI 사이의 소통 방식은 기술적 완성도와 신뢰성을 담보하기 위해 엄청난 패러다임 변화를 겪고 있습니다.
+            </p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 28px;">
+              <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); padding: 20px; border-radius: 14px;">
+                <h4 style="color: var(--aws-orange); font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">📢 기존 소통의 대조군</h4>
+                <ul class="custom-bullets" style="font-size: 0.92rem !important; margin: 0;">
+                  <li><strong>사람과 사람 (자연어 소통):</strong> 의도의 모호성, 기억력의 유실, 맥락 혼재로 인해 끊임없는 커뮤니케이션 미스와 한계가 존재함.</li>
+                  <li><strong>사람과 기계 (코드 소통):</strong> 명확한 신택스와 컴파일 규격을 기반으로 한 치의 오차도 없이 약속된 대로 완벽하게 소통함.</li>
+                </ul>
+              </div>
+              
+              <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); padding: 20px; border-radius: 14px;">
+                <h4 style="color: var(--neon-blue); font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">🧠 오늘날 AI 소통의 한계</h4>
+                <ul class="custom-bullets" style="font-size: 0.92rem !important; margin: 0;">
+                  <li><strong>AI와의 자연어 소통:</strong> 최첨단 생성형 AI와 다시 자연어로 교감하게 되면서, 과거 인간 대 인간 소통에서 겪었던 <strong>기억 소멸, 내용 혼재, 맥락 왜곡</strong> 문제가 똑같이 되풀이됨.</li>
+                  <li><strong>비즈니스 리스크:</strong> 이는 단순한 불편을 넘어, 프로덕션 코드의 완성도 저하와 동작 신뢰성 보장을 심각하게 어렵게 만듦.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 5 (NEW): THE PARADOX OF NATURAL LANGUAGE - DEMO
+           ========================================== -->
+      <section data-auto-animate>
+        <div class="slide-container">
+          <div class="glass-card" style="padding: 36px 50px;">
+            <div class="slide-subtitle" data-id="subtitle">
+              <span class="badge orange">PHILOSOPHICAL BRIDGE 01</span> 자연어의 한계와 역설
+            </div>
+            <h1 class="slide-title" data-id="title" style="background: linear-gradient(90deg, #fff, var(--aws-orange)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+              자연어의 한계: AI와의 대화에서 마주한 기억의 균열
+            </h1>
+            
+            <div class="grid-2" style="grid-template-columns: 0.95fr 1.05fr; gap: 24px; align-items: start; margin-top: 10px;">
+              <!-- 좌측: 시뮬레이션 입력 인터페이스 -->
+              <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); padding: 22px; border-radius: 16px;">
+                  <h4 style="color: var(--aws-orange); font-size: 1.15rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    🕹️ 소통 방식별 신뢰도 시뮬레이션
+                  </h4>
+                  <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px;">
+                    대화 턴(Turn) 수가 누적됨에 따라 자연어 소통의 기억 감퇴 및 맥락 왜곡 리스크와 Spec 기반 협업의 유지율을 실시간으로 확인해보세요.
+                  </p>
+                  
+                  <!-- 슬라이더 컨트롤 -->
+                  <div style="margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                      <span style="font-size: 0.9rem; font-weight: 600; color: #fff;">누적 대화 분량 (turns)</span>
+                      <span id="turn-value" style="font-size: 1.25rem; font-weight: 800; color: var(--aws-orange); background: rgba(255,153,0,0.1); padding: 2px 10px; border-radius: 6px;">10 Turns</span>
+                    </div>
+                    <input type="range" id="turn-slider" min="1" max="50" value="10" style="width: 100%; accent-color: var(--aws-orange); cursor: pointer; height: 6px; border-radius: 99px; outline: none; background: rgba(255,255,255,0.1);">
+                  </div>
+
+                  <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,153,0,0.06); padding: 10px 14px; border-radius: 10px; border-left: 4px solid var(--aws-orange);">
+                      <span style="font-size: 0.88rem; color: #d1d5db; font-weight: 600;">자연어 대화 신뢰도</span>
+                      <span id="nl-reliability" style="font-size: 1.05rem; font-weight: 800; color: var(--aws-orange);">85%</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(140,82,255,0.06); padding: 10px 14px; border-radius: 10px; border-left: 4px solid var(--neon-violet);">
+                      <span style="font-size: 0.88rem; color: #d1d5db; font-weight: 600;">Spec-driven 신뢰도</span>
+                      <span id="spec-reliability" style="font-size: 1.05rem; font-weight: 800; color: #b388ff;">98%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 우측: Chart.js 차트 캔버스 공간 -->
+              <div style="background: rgba(18, 20, 38, 0.4); border: 1px solid rgba(255,255,255,0.04); padding: 20px; border-radius: 16px; height: 310px; display: flex; align-items: center; justify-content: center; position: relative;">
+                <canvas id="reliabilityChart" style="width: 100%; height: 100%; max-height: 270px;"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 5 (NEW): SPEC-DRIVEN CONTINUITY
+           ========================================== -->
+      <section data-auto-animate>
+        <div class="slide-container">
+          <div class="glass-card" style="padding: 36px 50px;">
+            <div class="slide-subtitle" data-id="subtitle">
+              <span class="badge violet">PHILOSOPHICAL BRIDGE 02</span> SPEC-DRIVEN DEVELOPMENT
+            </div>
+            <h1 class="slide-title" data-id="title" style="background: linear-gradient(90deg, #fff, var(--neon-violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+              Spec으로 대화하라: 계속성(Continuity)을 담보하는 아키텍처
+            </h1>
+            
+            <div class="grid-2" style="grid-template-columns: 1.15fr 0.85fr; gap: 32px;">
+              <div>
+                <p class="slide-desc" style="font-size: 1.05rem; line-height: 1.65; margin-bottom: 16px;">
+                  AI의 단기 기억 소멸과 컨텍스트 리셋(Context Reset)을 극복하고, 초단기 작업이 아닌 중장기 대규모 엔지니어링 프로젝트를 성사시키는 유일한 비밀은 <strong>"명문화된 규격(Specification)"</strong>입니다.
+                </p>
+                <ul class="custom-bullets" style="font-size: 0.95rem !important;">
+                  <li><strong>자연어의 구조화:</strong> 최초 요구사항을 흘려보내지 않고, 불변에 가까운 명문화된 규격서(Spec)로 박제하여 고정 메모리에 안착시킵니다.</li>
+                  <li><strong>컨텍스트 동기화 (Continuation):</strong> 대화가 길어져 컨텍스트 윈도우가 초기화되거나 기억 유실 타이밍이 도래할 때마다, 이 <strong>Spec을 메모리처럼 매 턴마다 강제 참조</strong>하게 하여 AI의 개발 아키텍처 계속성을 완벽하게 유지시킵니다.</li>
+                </ul>
+              </div>
+              
+              <!-- 프레젠테이션 제작에 실제 적용된 디자인 스펙 명세 (코드블록) -->
+              <div style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 20px; font-family: 'Courier New', monospace; font-size: 0.8rem; line-height: 1.4; color: #a7f3d0; overflow: hidden; box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);">
+                <div style="display: flex; gap: 6px; margin-bottom: 12px;">
+                  <span style="width: 10px; height: 10px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>
+                  <span style="width: 10px; height: 10px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span>
+                  <span style="width: 10px; height: 10px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+                  <span style="margin-left: 8px; color: #6b7280; font-size: 0.75rem;">ai-collaboration-spec.yaml</span>
+                </div>
+<pre style="margin: 0; white-space: pre-wrap; font-family: inherit;">
+<span style="color: #6b7280;"># Presentation Design Specification</span>
+<span style="color: #34d399;">layout:</span>
+  <span style="color: #34d399;">ratio:</span> "1280 * 720 (Strict 16:9)"
+  <span style="color: #34d399;">card_padding:</span> "30px 44px"
+  <span style="color: #34d399;">title_size:</span> "2.6rem"
+<span style="color: #34d399;">media_constraints:</span>
+  <span style="color: #34d399;">gallery_height:</span> "max 180px"
+  <span style="color: #34d399;">coex_video:</span> "loop autoplay muted"
+  <span style="color: #34d399;">orientation_sync:</span>
+    <span style="color: #34d399;">kahoot_win:</span> "portrait (.jpg)"
+    <span style="color: #34d399;">lunch_box:</span> "square 3-grid"
+<span style="color: #34d399;">variables:</span>
+  <span style="color: #34d399;">aws_orange:</span> "#ff9900"
+  <span style="color: #34d399;">neon_violet:</span> "#8c52ff"
+</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 6: ORACLE SESSION
+           ========================================== -->
+      <section data-auto-animate>
+        <div class="slide-container">
+          <div class="glass-card">
+            <div class="slide-subtitle" data-id="subtitle">
+              <span class="badge orange">BEST SESSION 01</span> ORACLE MINI-SESSION
+            </div>
+            <h1 class="slide-title" data-id="title" style="font-size: 2.3rem !important; background: linear-gradient(90deg, #fff, var(--aws-orange)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 22px !important;">
+              🧠 AI의 장기기억에 관하여
+            </h1>
+            <div style="height: 1px; background: rgba(255,255,255,0.06); margin-bottom: 22px;"></div>
+
+            <div class="grid-2">
+              <div>
+                <h3 style="font-size: 1.25rem; font-weight: 600; color: #fff; margin-bottom: 10px;">AI에게 뇌(Brain)와 영구 저장소를 심어주는 방식</h3>
+                <p class="slide-desc" style="font-size: 1rem; line-height: 1.55; margin-bottom: 14px;">
+                  오라클 부스에서 진행된 미니세션으로, 컨텍스트 제한을 극복하고 AI가 과거의 복잡한 대화 맥락과 히스토리를 완벽하게 장기 보존하도록 구현하는 세 가지 데이터 설계 방식을 다루었습니다.
+                </p>
+                <ul class="custom-bullets" style="font-size: 0.95rem !important;">
+                  <li><strong>벡터 DB (Vector Database):</strong> 비정형 데이터와 자연어 임베딩 값을 고속 인덱싱하여 지능적 유사도 검색 구현.</li>
+                  <li><strong>지식 그래프 (Knowledge Graph):</strong> 개체 간의 연관 관계를 맵 형태로 구성해 고해상도의 논리적 추론 제공.</li>
+                  <li><strong>관계형 DB (RDB):</strong> 완벽한 무결성이 보장되는 정형 데이터를 장기기억의 강력한 백본으로 활용.</li>
+                </ul>
+              </div>
+              
+              <!-- 사진 2개 가로 정렬 그리드 연동 완비 -->
+              <div style="display: grid; grid-template-rows: 1fr 1fr; gap: 12px; max-height: 380px;">
+                <div class="gallery-item" style="aspect-ratio: 16 / 10; max-height: 160px;">
+                  <img src="./oracle_session1.jpeg" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" alt="오라클 세션 1">
+                </div>
+                <div class="gallery-item" style="aspect-ratio: 16 / 10; max-height: 160px;">
+                  <img src="./oracle_session2.jpeg" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" alt="오라클 세션 2">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 5: PALO ALTO SESSION
+           ========================================== -->
+      <section data-auto-animate>
+        <div class="slide-container">
+          <div class="glass-card" style="padding: 36px 50px;">
+            <div class="slide-subtitle" data-id="subtitle">
+              <span class="badge violet">BEST SESSION 02</span> PALO ALTO MINI-SESSION
+            </div>
+            <h1 class="slide-title" data-id="title" style="font-size: 2.3rem !important; background: linear-gradient(90deg, #fff, var(--neon-violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 22px !important;">
+              🛡️ AI Security Gateway & 익숙한 패러다임
+            </h1>
+            <div style="height: 1px; background: rgba(255,255,255,0.06); margin-bottom: 22px;"></div>
+
+            <!-- 사진 없이 텍스트에만 완전히 몰입하도록 1단 와이드 배치 -->
+            <div style="max-width: 1100px;">
+              <h3 style="font-size: 1.35rem; font-weight: 600; color: #fff; margin-bottom: 12px;">핵심 러닝: AI 서비스도 결국 기존 아키텍처의 연장선</h3>
+              <p class="slide-desc" style="font-size: 1.08rem; line-height: 1.6; margin-bottom: 20px;">
+                팔로알토 부스에서는 위협 모델이 급증한 AI 인프라 환경에서 보안 요소를 중앙 집약적으로 통제하는 <strong>AI Security Gateway</strong> 개념을 설명했습니다.
+              </p>
+              
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); padding: 20px; border-radius: 14px;">
+                  <h4 style="color: var(--aws-orange); font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">🛡️ 파편화된 위협 통합하기</h4>
+                  <p style="font-size: 0.92rem; color: #d1d5db; line-height: 1.5; margin: 0;">
+                    API 보안, 프롬프트 인젝션 방어, 토큰 탈취 방지, CORS 설정 등 수많은 보안 위협을 개별 대응하지 않고 단일 Gateway 인프라로 묶어 완벽하게 통제하고 처리합니다.
+                  </p>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); padding: 20px; border-radius: 14px;">
+                  <h4 style="color: var(--neon-blue); font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">💡 가장 신선했던 아키텍처적 배움</h4>
+                  <p style="font-size: 0.92rem; color: #d1d5db; line-height: 1.5; margin: 0;">
+                    멀고 낯설게만 느껴졌던 최첨단 AI 서비스 역시, 결국 <strong>기존의 익숙한 데이터베이스(Database) 관리 방식</strong>과 <strong>네트워크 게이트웨이(Gateway) 연동 아키텍처</strong>를 응용해 구현된다는 사실이 매우 신선하고 친근하게 와닿았습니다.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 6: KAHOOT QUIZ WIN
+           ========================================== -->
+      <section data-auto-animate>
+        <div class="slide-container">
+          <div class="glass-card" style="background: linear-gradient(135deg, rgba(140, 82, 255, 0.05) 0%, rgba(0, 240, 255, 0.05) 100%);">
+            <div class="slide-subtitle" data-id="subtitle">
+              <span class="badge orange">HIGHLIGHT OF THE DAY</span> 세션 경청의 결과
+            </div>
+            <h1 class="slide-title" data-id="title">부스 카훗(Kahoot!) 퀴즈 배틀, 대망의 1위!</h1>
+            
+            <div class="grid-2">
+              <div>
+                <p class="slide-desc" style="font-size: 1.15rem; line-height: 1.6; color: #fff;">
+                  팔로알토 부스의 AI Security Gateway 미니세션을 초집중하여 경청한 바로 그 직후, 현장 참여 엔지니어들을 대상으로 실시간 <strong>카훗 퀴즈 배틀</strong>이 펼쳐졌습니다.
+                </p>
+                <ul class="custom-bullets" style="margin-top: 14px;">
+                  <li><strong>전율의 1위 기록:</strong> 방금 전 들었던 보안 이론과 아키텍처 상식을 묻는 고난도 문제에서, 빛보다 빠른 반응 속도로 정답을 쓸어 담으며 <strong>당당히 최종 1등</strong>을 달성했습니다!</li>
+                  <li><strong>우승 전리품 획득:</strong> 1등 우승 상품으로 무려 <strong>소니(SONY) 블루투스 헤드셋</strong>을 거머쥐며 세션 집중의 보상을 확실하게 받아내어 부스 현장에서 큰 주목을 받았습니다.</li>
+                </ul>
+              </div>
+              
+              <!-- 세로형 1장 + 가로형 2장의 완벽한 비대칭 매거진 그리드 아키텍처 -->
+              <div style="display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 12px; max-height: 380px; align-items: stretch;">
+                <!-- 좌측: 세로형 카훗 1위 이미지 (종횡비 원본 보존) -->
+                <div class="gallery-item" style="height: 330px;">
+                  <img src="./kahoot_win.png" style="width: 100%; height: 100%; object-fit: contain; background: rgba(0,0,0,0.15);" alt="카훗 퀴즈 1위">
+                </div>
+                <!-- 우측: 가로형 헤드셋 2장 (상하 2단 배치) -->
+                <div style="display: flex; flex-direction: column; gap: 12px; height: 330px;">
+                  <div class="gallery-item" style="flex: 1; height: 159px;">
+                    <img src="./headset_box.jpeg" style="width: 100%; height: 100%; object-fit: cover;" alt="헤드셋 박스">
+                  </div>
+                  <div class="gallery-item" style="flex: 1; height: 159px;">
+                    <img src="./headset_real.jpeg" style="width: 100%; height: 100%; object-fit: cover;" alt="헤드셋 실물">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 7: AWS GAME
+           ========================================== -->
+      <section data-auto-animate>
+        <div class="slide-container">
+          <div class="glass-card">
+            <!-- 3번 슬라이드의 card-infra 영역이 타이틀로 부드럽게 복구되며 모핑 연계 -->
+            <div class="slide-subtitle" data-id="subtitle">
+              <span class="badge orange">INTERACTIVE ZONE</span> 게임으로 만나는 클라우드
+            </div>
+            <h1 class="slide-title" data-id="title" style="margin-bottom: 14px !important;">헷갈리는 수많은 제품군, 게임으로 정복하다</h1>
+            
+            <div class="grid-2">
+              <div>
+                <p class="slide-desc" style="font-size: 1.1rem; line-height: 1.6;">
+                  AWS는 제품의 수가 워낙 다양하고 방대하기 때문에, 주니어나 시니어 엔지니어를 불문하고 적절한 최적의 서버 및 인프라 구성을 설계할 때 가끔 혼란을 겪기 마련입니다.
+                </p>
+                <ul class="custom-bullets" style="margin-top: 14px;">
+                  <li><strong>인프라 설계 시뮬레이션 게임:</strong> 이러한 진입 장벽을 깨부수기 위해, 주어진 비즈니스 요구사항에 따라 적절한 제품군을 조합하여 완벽한 서버 아키텍처를 구성해 나가는 유쾌한 참여형 게임 존이 마련되어 있었습니다.</li>
+                  <li><strong>체험 효과:</strong> 복잡한 클라우드 설계를 직관적인 게임으로 유쾌하게 풀어내어, 아키텍처 매칭 원리를 더 쉽고 선명하게 인지할 수 있었던 즐거운 기회였습니다.</li>
+                </ul>
+              </div>
+              
+              <!-- 사진 2개 가로 정렬 그리드 연동 완비 -->
+              <div style="display: grid; grid-template-rows: 1fr 1fr; gap: 12px; max-height: 380px;">
+                <div class="gallery-item" style="aspect-ratio: 16 / 10; max-height: 160px;">
+                  <img src="./aws_game1.jpeg" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" alt="아키텍처 게임">
+                </div>
+                <div class="gallery-item" style="aspect-ratio: 16 / 10; max-height: 160px;">
+                  <img src="./aws_game2.jpeg" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" alt="게임 굿즈 인증">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 8: LUNCH BOX REVIEW
+           ========================================== -->
+      <section data-auto-animate>
+        <div class="slide-container">
+          <div class="glass-card">
+            <div class="slide-subtitle" data-id="subtitle">
+              <span class="badge violet">FESTIVAL ENERGY</span> 금강산도 식후경
+            </div>
+            <h1 class="slide-title" data-id="title">소소한 즐거움, 런치박스 솔직 후기</h1>
+            
+            <div class="grid-2">
+              <!-- 런치박스 3장 정사각형 가로 배치 최적화 -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; max-height: 380px;">
+                <div class="gallery-item" style="aspect-ratio: 1 / 1;">
+                  <img src="./lunch_box.jpeg" style="width: 100%; height: 100%; object-fit: cover;" alt="런치 박스 전체">
+                </div>
+                <div class="gallery-item" style="aspect-ratio: 1 / 1;">
+                  <img src="./lunch_coupon.jpeg" style="width: 100%; height: 100%; object-fit: cover;" alt="런치 쿠폰">
+                </div>
+                <div class="gallery-item" style="aspect-ratio: 1 / 1;">
+                  <img src="./lunch_details.jpeg" style="width: 100%; height: 100%; object-fit: cover;" alt="수저 세트 디테일">
+                </div>
+              </div>
+              
+              <div>
+                <p class="slide-desc" style="font-size: 1.15rem; line-height: 1.65;">
+                  개발자들의 큰 축제인 만큼, 점심 식사 준비에 대한 기대도 컸습니다. 
+                </p>
+                <ul class="custom-bullets" style="margin-top: 18px;">
+                  <li><strong>훌륭한 런치 박스:</strong> 소문이나 듣던 것보다 훨씬 도시락의 구성이 알차고 훌륭했습니다.</li>
+                  <li><strong>확실한 맛과 퀄리티:</strong> 전반적으로 음식이 아주 깔끔하고 기대 이상으로 참 맛있었습니다.</li>
+                  <li><strong>힙한 디테일:</strong> 식사를 교환할 때 받은 런치 쿠폰 디자인도 대단히 힙하게 꾸며져 있어 깨알 같은 즐거움이 있었습니다.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 9: MOTIVATION
+           ========================================== -->
+      <section data-auto-animate>
+        <div class="slide-container">
+          <div class="glass-card" style="padding: 36px 44px; background: linear-gradient(135deg, rgba(255, 153, 0, 0.04) 0%, rgba(140, 82, 255, 0.04) 100%);">
+            <div class="slide-subtitle" data-id="subtitle">
+              <span class="badge orange">EPILOGUE & REFLECTION</span> 서밋 참관을 마치는 마음의 기록
+            </div>
+            
+            <div class="grid-2" style="margin-top: 8px; gap: 32px;">
+              <div>
+                <h1 class="slide-title" data-id="title" style="font-size: 2.3rem !important; line-height: 1.3 !important; background: linear-gradient(90deg, #ffffff, var(--aws-orange)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px !important;">
+                  지속 가능한 개발자 성장을 향한 뜨거운 불꽃을 당기다
+                </h1>
+                <p class="slide-desc" style="font-size: 1.02rem; line-height: 1.6; color: #e2e8f0; margin-bottom: 12px;">
+                  당연하게도, 단 한 번의 서밋 참여가 저를 하루아침에 비약적인 '레벨 업' 개발자로 만들어주지는 못합니다. 하지만 이번 서밋은 그 무엇보다 값진 가치들을 가슴속에 아로새겨 주었습니다.
+                </p>
+                <ul class="custom-bullets" style="font-size: 0.95rem !important;">
+                  <li><strong>성장의 나침반이 될 수많은 키워드:</strong> AI 장기기억, Gateway 기반 다층 보안, 서버 구성 시뮬레이션 등 앞으로 치열하게 파고들 로드맵의 획득.</li>
+                  <li><strong>압도적인 긍정의 에너지를 호흡하다:</strong> 기술의 변화를 긍정하고, 더 나은 내일을 꿈꾸며 열정을 불태우는 <strong>수백 수천 명의 동료 엔지니어들</strong>과 한 공간에서 뜨겁게 호흡했다는 그 사실 자체가 거대하고 전율 돋는 동기부여가 되었습니다.</li>
+                  <li><strong>양손 무거운 전리품:</strong> 뜻밖의 우승으로 획득한 <strong>소니 헤드셋</strong>과 티셔츠, 각종 스티커, IT 텀블러까지 푸짐한 굿즈를 챙겨 든든하게 복귀했습니다! 🎁</li>
+                </ul>
+              </div>
+              
+              <!-- 사진 연동 완비 (우측 끝 여백까지 시원하게 확장) -->
+              <div class="photo-placeholder" style="width: 100%; height: 350px; border: none; background: transparent;">
+                <img src="./goods_all.png" style="width: 100%; height: 100%; object-fit: cover; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" alt="전리품 자랑 샷">
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 12: 3D THANK YOU
+           ========================================== -->
+      <section data-auto-animate id="thank-you-3d-slide">
+        <div class="slide-container">
+          <div class="glass-card" style="padding: 50px 60px; min-height: 520px; overflow: hidden; display: flex; align-items: center;">
+            <div class="grid-2" style="grid-template-columns: 1fr 1fr; width: 100%; align-items: center; gap: 40px;">
+              
+              <!-- 좌측: 모핑된 타이틀과 클로징 텍스트 -->
+              <div>
+                <div class="slide-subtitle" data-id="subtitle" style="margin-bottom: 20px;">
+                  <span class="badge orange">EPILOGUE</span> AWS SEOUL SUMMIT 2026
+                </div>
+                <h1 class="slide-title" data-id="title" style="font-size: 3.2rem !important; background: linear-gradient(135deg, #ffffff 40%, var(--aws-orange) 80%, var(--neon-violet)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.3 !important; font-weight: 800 !important; margin-bottom: 24px !important;">
+                  경청해 주셔서<br>감사합니다
+                </h1>
+                <p style="font-size: 1.1rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 0;">
+                  서밋에서 얻은 배움과 뜨거운 불꽃을 나누며,<br>우리 팀원분들과 함께 즐겁게 레벨 업 해보겠습니다!
+                </p>
+                <div>
+                  <a href="./pinball_game.html" target="_blank" class="pinball-link-btn">
+                    ⚡ 커피 기프티콘 핀볼 추첨기 실행
+                  </a>
+                </div>
+                <div style="margin-top: 24px; font-size: 0.9rem; color: rgba(255,255,255,0.4); display: flex; gap: 20px;">
+                  <span>Presented by. 류대성</span>
+                  <span>|</span>
+                  <span>2026. 05. 29</span>
+                </div>
+
+              </div>
+              
+              <!-- 우측: 3D Three.js WebGL Canvas 컨테이너 -->
+              <div style="position: relative; width: 100%; height: 420px; display: flex; justify-content: center; align-items: center; overflow: hidden; border-radius: 20px; background: rgba(0,0,0,0.15);">
+                <div id="canvas3d-container" style="width: 100%; height: 100%; cursor: grab;"></div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 13 (Neon Pinball) was removed & moved to a separate standalone page (pinball_game.html) -->
+
+    </div>
+  </div>
+
+
+  <!-- Reveal.js Engine JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.js"></script>
+  
+  <script>
+    // Initialize Reveal.js with Auto-Animate & custom config
+    Reveal.initialize({
+      hash: true,
+      controls: true,
+      progress: true,
+      history: true,
+      center: true,
+      transition: 'fade', // 기본 화면 전환은 fade로 우아하게
+      transitionSpeed: 'default',
+      
+      // Auto-Animate (모핑 효과) 설정
+      autoAnimate: true,
+      autoAnimateDuration: 1.0,
+      autoAnimateEasing: 'cubic-bezier(0.25, 1, 0.5, 1)', // 부드러운 모션그래픽 베지에 곡선
+      
+      // 입력 방식 설정
+      keyboard: true,
+      touch: true,
+      respondToHashChanges: true,
+
+      // 프레젠테이션 해상도 설정 (16:9 와이드 비율)
+      width: 1280,
+      height: 720,
+      margin: 0.04,
+      minScale: 0.2,
+      maxScale: 2.0
+    });
+
+    // ==========================================
+    // CHART.JS: 실시간 신뢰도 시뮬레이션 차트
+    // ==========================================
+    let reliabilityChart = null;
+
+    function initChart() {
+      const canvas = document.getElementById('reliabilityChart');
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      const gradientNL = ctx.createLinearGradient(0, 0, 0, 300);
+      gradientNL.addColorStop(0, 'rgba(255, 153, 0, 0.3)');
+      gradientNL.addColorStop(1, 'rgba(255, 153, 0, 0.0)');
+
+      const gradientSpec = ctx.createLinearGradient(0, 0, 0, 300);
+      gradientSpec.addColorStop(0, 'rgba(140, 82, 255, 0.3)');
+      gradientSpec.addColorStop(1, 'rgba(140, 82, 255, 0.0)');
+
+      reliabilityChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: Array.from({length: 10}, (_, i) => `${i + 1} Turn`),
+          datasets: [
+            {
+              label: '자연어 소통 신뢰도',
+              borderColor: '#ff9900',
+              borderWidth: 3,
+              backgroundColor: gradientNL,
+              fill: true,
+              data: [99, 95, 90, 85, 78, 68, 55, 42, 28, 15],
+              tension: 0.35,
+              pointBackgroundColor: '#ff9900',
+              pointRadius: 4
+            },
+            {
+              label: 'Spec-driven 신뢰도',
+              borderColor: '#8c52ff',
+              borderWidth: 3,
+              backgroundColor: gradientSpec,
+              fill: true,
+              data: [99, 99, 98, 98, 98, 97, 98, 97, 97, 98],
+              tension: 0.1,
+              pointBackgroundColor: '#8c52ff',
+              pointRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: {
+                color: '#9ca3af',
+                font: { family: 'Outfit', size: 12, weight: '600' }
+              }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(18, 20, 38, 0.95)',
+              titleColor: '#fff',
+              bodyColor: '#fff',
+              borderColor: 'rgba(255,255,255,0.08)',
+              borderWidth: 1,
+              bodyFont: { family: 'Outfit' }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.04)' },
+              ticks: { color: '#9ca3af', font: { family: 'Outfit' } }
+            },
+            y: {
+              min: 0,
+              max: 100,
+              grid: { color: 'rgba(255, 255, 255, 0.04)' },
+              ticks: {
+                color: '#9ca3af',
+                font: { family: 'Outfit' },
+                callback: function(value) { return value + '%'; }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function updateChart(turns) {
+      if (!reliabilityChart) return;
+
+      reliabilityChart.data.labels = Array.from({length: turns}, (_, i) => `${i + 1} Turn`);
+
+      const nlData = [];
+      const specData = [];
+      
+      for(let i = 1; i <= turns; i++) {
+        let nlVal = 100 - (i * 1.3) - (Math.pow(i, 1.25) * 0.45);
+        nlVal = Math.max(8, Math.round(nlVal));
+        nlData.push(nlVal);
+
+        let specVal = 99 - (Math.sin(i * 0.45) * 1.1) - (i * 0.06);
+        specVal = Math.max(92, Math.round(specVal));
+        specData.push(specVal);
+      }
+
+      reliabilityChart.data.datasets[0].data = nlData;
+      reliabilityChart.data.datasets[1].data = specData;
+      
+      document.getElementById('turn-value').innerText = `${turns} Turns`;
+      document.getElementById('nl-reliability').innerText = `${nlData[nlData.length - 1]}%`;
+      document.getElementById('spec-reliability').innerText = `${specData[specData.length - 1]}%`;
+
+      reliabilityChart.update();
+    }
+
+    // ==========================================
+    // THREE.JS: 피날레 3D AI 신경망 (Active Neural Network)
+    // ==========================================
+    let scene, camera, renderer;
+    let particleSystem, lineSystem;
+    let animId = null;
+    let mouseX = 0, mouseY = 0;
+    let targetX = 0, targetY = 0;
+
+    const maxParticleCount = 380; 
+    const maxDistance = 25;      
+    let particlesData = [];      
+    let positions, colors;
+    let linePositions, lineColors;
+
+    function initThreeJS() {
+      const container = document.getElementById('canvas3d-container');
+      if (!container) return;
+
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
+      camera.position.z = 110;
+
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(renderer.domElement);
+
+      const segments = maxParticleCount;
+
+      const geometry = new THREE.BufferGeometry();
+      const lineGeometry = new THREE.BufferGeometry();
+
+      positions = new Float32Array(segments * 3);
+      colors = new Float32Array(segments * 3);
+
+      const colorAWS = new THREE.Color('#ff9900');
+      const colorViolet = new THREE.Color('#8c52ff');
+      const colorBlue = new THREE.Color('#00f0ff');
+
+      // AI 뉴런 입자 초기화
+      for (let i = 0; i < segments; i++) {
+        const u = Math.random();
+        const v = Math.random();
+        const theta = u * 2.0 * Math.PI;
+        const phi = Math.acos(2.0 * v - 1.0);
+        
+        const r = 38 + (Math.random() - 0.5) * 4;
+
+        const x = r * Math.sin(phi) * Math.cos(theta);
+        const y = r * Math.sin(phi) * Math.sin(theta);
+        const z = r * Math.cos(phi);
+
+        positions[i * 3] = x;
+        positions[i * 3 + 1] = y;
+        positions[i * 3 + 2] = z;
+
+        let mixedColor;
+        const rand = Math.random();
+        if (rand < 0.35) {
+          mixedColor = colorAWS.clone().lerp(colorViolet, Math.random());
+        } else if (rand < 0.7) {
+          mixedColor = colorViolet.clone().lerp(colorBlue, Math.random());
+        } else {
+          mixedColor = colorBlue.clone().lerp(colorAWS, Math.random());
+        }
+
+        colors[i * 3] = mixedColor.r;
+        colors[i * 3 + 1] = mixedColor.g;
+        colors[i * 3 + 2] = mixedColor.b;
+
+        particlesData.push({
+          velocity: new THREE.Vector3(
+            (Math.random() - 0.5) * 0.12,
+            (Math.random() - 0.5) * 0.12,
+            (Math.random() - 0.5) * 0.12
+          ),
+          numConnections: 0,
+          color: mixedColor
+        });
+      }
+
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+      const texture = createCircleTexture();
+      const material = new THREE.PointsMaterial({
+        size: 3.5,
+        map: texture,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        vertexColors: true
+      });
+
+      particleSystem = new THREE.Points(geometry, material);
+      scene.add(particleSystem);
+
+      const maxConnections = segments * segments;
+      linePositions = new Float32Array(maxConnections * 3);
+      lineColors = new Float32Array(maxConnections * 3);
+
+      lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+      lineGeometry.setAttribute('color', new THREE.BufferAttribute(lineColors, 3));
+
+      const lineMaterial = new THREE.LineBasicMaterial({
+        vertexColors: true,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        linewidth: 1
+      });
+
+      lineSystem = new THREE.LineSegments(lineGeometry, lineMaterial);
+      scene.add(lineSystem);
+
+      container.addEventListener('mousemove', onMouseMove, false);
+      window.addEventListener('resize', onWindowResize, false);
+    }
+
+    function createCircleTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 32;
+      canvas.height = 32;
+      const ctx = canvas.getContext('2d');
+      const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+      gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+      gradient.addColorStop(0.2, 'rgba(255, 255, 255, 0.8)');
+      gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.2)');
+      gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(16, 16, 16, 0, Math.PI * 2);
+      ctx.fill();
+      
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    function onMouseMove(event) {
+      const container = document.getElementById('canvas3d-container');
+      if (!container) return;
+      
+      const rect = container.getBoundingClientRect();
+      mouseX = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouseY = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    }
+
+    function onWindowResize() {
+      const container = document.getElementById('canvas3d-container');
+      if (!container || !renderer) return;
+
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height);
+    }
+
+    function animateThreeJS() {
+      animId = requestAnimationFrame(animateThreeJS);
+
+      let vertexpos = 0;
+      let colorpos = 0;
+      let numConnected = 0;
+
+      for (let i = 0; i < maxParticleCount; i++) {
+        particlesData[i].numConnections = 0;
+
+        let x = positions[i * 3];
+        let y = positions[i * 3 + 1];
+        let z = positions[i * 3 + 2];
+
+        x += particlesData[i].velocity.x;
+        y += particlesData[i].velocity.y;
+        z += particlesData[i].velocity.z;
+
+        const distFromCenter = Math.sqrt(x*x + y*y + z*z);
+        if (distFromCenter > 42 || distFromCenter < 34) {
+          particlesData[i].velocity.multiplyScalar(-1);
+        }
+
+        positions[i * 3] = x;
+        positions[i * 3 + 1] = y;
+        positions[i * 3 + 2] = z;
+      }
+
+      for (let i = 0; i < maxParticleCount; i++) {
+        const x1 = positions[i * 3];
+        const y1 = positions[i * 3 + 1];
+        const z1 = positions[i * 3 + 2];
+
+        for (let j = i + 1; j < maxParticleCount; j++) {
+          const x2 = positions[j * 3];
+          const y2 = positions[j * 3 + 1];
+          const z2 = positions[j * 3 + 2];
+
+          const dx = x1 - x2;
+          const dy = y1 - y2;
+          const dz = z1 - z2;
+          const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+          if (dist < maxDistance) {
+            particlesData[i].numConnections++;
+            particlesData[j].numConnections++;
+
+            const alpha = 1.0 - (dist / maxDistance);
+
+            linePositions[vertexpos++] = x1;
+            linePositions[vertexpos++] = y1;
+            linePositions[vertexpos++] = z1;
+
+            linePositions[vertexpos++] = x2;
+            linePositions[vertexpos++] = y2;
+            linePositions[vertexpos++] = z2;
+
+            const c1 = particlesData[i].color;
+            const c2 = particlesData[j].color;
+
+            lineColors[colorpos++] = c1.r * alpha * 0.8;
+            lineColors[colorpos++] = c1.g * alpha * 0.8;
+            lineColors[colorpos++] = c1.b * alpha * 0.8;
+
+            lineColors[colorpos++] = c2.r * alpha * 0.8;
+            lineColors[colorpos++] = c2.g * alpha * 0.8;
+            lineColors[colorpos++] = c2.b * alpha * 0.8;
+
+            numConnected++;
+          }
+        }
+      }
+
+      particleSystem.geometry.attributes.position.needsUpdate = true;
+      lineSystem.geometry.attributes.position.needsUpdate = true;
+      lineSystem.geometry.attributes.color.needsUpdate = true;
+
+      lineSystem.geometry.setDrawRange(0, numConnected * 2);
+
+      if (particleSystem && lineSystem) {
+        particleSystem.rotation.y += 0.0015;
+        particleSystem.rotation.x += 0.0008;
+        lineSystem.rotation.y += 0.0015;
+        lineSystem.rotation.x += 0.0008;
+
+        targetX += (mouseX - targetX) * 0.04;
+        targetY += (mouseY - targetY) * 0.04;
+
+        particleSystem.rotation.y += targetX * 0.012;
+        particleSystem.rotation.x += -targetY * 0.012;
+        lineSystem.rotation.y += targetX * 0.012;
+        lineSystem.rotation.x += -targetY * 0.012;
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    function stopThreeJS() {
+      if (animId !== null) {
+        cancelAnimationFrame(animId);
+        animId = null;
+      }
+    }
+
+    // ==========================================
+    // REVEAL.JS EVENT & LIFECYCLE CONTROLLER
+    // ==========================================
+    Reveal.on('ready', event => {
+      initChart();
+      updateChart(10);
+
+      const slider = document.getElementById('turn-slider');
+      if (slider) {
+        slider.addEventListener('input', e => {
+          updateChart(parseInt(e.target.value));
+        });
+      }
+
+      initThreeJS();
+
+      const currentSlide = Reveal.getCurrentSlide();
+      if (currentSlide) {
+        if (currentSlide.id === 'thank-you-3d-slide') {
+          animateThreeJS();
+        }
+      }
+    });
+
+    Reveal.on('slidechanged', event => {
+      const currentSlide = event.currentSlide;
+      
+      if (currentSlide && currentSlide.querySelector('#reliabilityChart')) {
+        const slider = document.getElementById('turn-slider');
+        if (slider) {
+          slider.value = 10;
+          updateChart(10);
+        }
+      }
+
+      if (currentSlide && currentSlide.id === 'thank-you-3d-slide') {
+        stopThreeJS();
+        animateThreeJS();
+      } else {
+        stopThreeJS();
+      }
+    });
+    </script>
+</body>
+</html>
+
