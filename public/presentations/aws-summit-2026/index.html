@@ -330,9 +330,42 @@
       font-size: 0.95rem;
       font-weight: bold;
     }
+    #fullscreen-btn:hover {
+      background: rgba(255, 153, 0, 0.2) !important;
+      border-color: var(--aws-orange) !important;
+      color: var(--aws-orange) !important;
+      transform: scale(1.08);
+      box-shadow: 0 6px 20px rgba(255, 153, 0, 0.3);
+    }
   </style>
 </head>
 <body>
+
+  <!-- Floating Action Button for Fullscreen Toggle -->
+  <button id="fullscreen-btn" style="
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 999;
+    background: rgba(18, 20, 38, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  " title="전체 화면 보기 (F)">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+      <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+    </svg>
+  </button>
 
   <!-- Ambient background aurora animations -->
   <div class="aurora-bg"></div>
@@ -1335,6 +1368,36 @@
         animateThreeJS();
       } else {
         stopThreeJS();
+      }
+    });
+
+    // Fullscreen Toggle Button Logic
+    const fsBtn = document.getElementById('fullscreen-btn');
+    fsBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      if (document.fullscreenElement) {
+        fsBtn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M4 14h6v6m10-6h-6v6M4 10h6V4m10 6h-6V4"/>
+          </svg>
+        `;
+        fsBtn.title = "전체 화면 종료 (ESC)";
+      } else {
+        fsBtn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+          </svg>
+        `;
+        fsBtn.title = "전체 화면 보기 (F)";
       }
     });
     </script>
