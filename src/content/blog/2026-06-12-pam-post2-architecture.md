@@ -1,6 +1,6 @@
 ---
 title: "AI에게 계층 규칙을 가르치는 방법"
-pubDate: 2026-06-12
+pubDate: 2026-06-11
 description: "피카밈 백엔드 구조를 Clean Architecture로 설계하고, AI 에이전트가 이를 위반하지 않도록 규칙을 강제한 경험을 공유합니다."
 tags: ["CleanArchitecture", "DDD", "Kotlin", "바이브코딩"]
 series: "피카밈 개발기"

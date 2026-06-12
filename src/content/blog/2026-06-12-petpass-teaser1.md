@@ -1,6 +1,6 @@
 ---
 title: "Pet-Pass 개발기 #1: 반려동물 지도 앱 기획과 프로토타입"
-pubDate: 2026-06-12
+pubDate: 2026-06-08
 description: "AI와 협업하여 3주 만에 완성한 반려동물 지도 앱 Pet-Pass의 시작점과 기획 의도를 다룹니다."
 tags: ["PetPass", "사이드프로젝트", "지도앱", "AI협업"]
 series: "Pet-Pass 프로젝트"

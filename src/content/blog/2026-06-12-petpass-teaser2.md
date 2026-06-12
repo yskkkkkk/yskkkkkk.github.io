@@ -1,6 +1,6 @@
 ---
 title: "Pet-Pass 개발기 #2: 지도 API 연동과 위치 기반 최적화"
-pubDate: 2026-06-12
+pubDate: 2026-06-09
 description: "지도 API를 연동하면서 겪었던 성능 이슈와 좌표 기반 데이터 필터링 경험을 회고합니다."
 tags: ["PetPass", "지도API", "최적화", "트러블슈팅"]
 series: "Pet-Pass 프로젝트"
