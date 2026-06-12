@@ -1,0 +1,160 @@
+/* pick-a-meme custom visual components for MDX */
+
+:root {
+  --pam-bg-secondary: #242938; /* Adjusted for dark mode integration */
+  --pam-border: #3b4252;
+  --pam-primary: #00ff88;
+  --pam-text-primary: #ffffff;
+  --pam-text-secondary: #d8dee9;
+  --pam-text-tertiary: #a1b0c8;
+}
+
+/* ─── 조건 카드 (post1) ─── */
+.condition-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 28px 0;
+}
+.condition-card {
+  background: var(--pam-bg-secondary);
+  border-radius: 14px;
+  padding: 24px 16px;
+  text-align: center;
+  border: 1px solid var(--pam-border);
+}
+.condition-icon { font-size: 28px; margin-bottom: 10px; }
+.condition-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--pam-primary);
+  margin-bottom: 8px;
+}
+.condition-desc {
+  font-size: 13px;
+  color: var(--pam-text-tertiary);
+  line-height: 1.6;
+}
+@media (max-width: 600px) {
+  .condition-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── 스택 비교 테이블 (post1) ─── */
+.stack-table {
+  margin: 28px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--pam-border);
+}
+.stack-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin: 0;
+}
+.stack-table th {
+  background: var(--pam-bg-secondary);
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--pam-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--pam-border);
+}
+.stack-table td {
+  padding: 12px 16px;
+  color: var(--pam-text-secondary);
+  border-bottom: 1px solid var(--pam-border);
+  line-height: 1.5;
+  vertical-align: top;
+}
+.stack-table tr:last-child td { border-bottom: none; }
+.stack-table td.chosen { color: var(--pam-primary); font-weight: 700; }
+.stack-table td.label { font-weight: 600; color: var(--pam-text-primary); white-space: nowrap; }
+
+/* ─── 레이어 스택 다이어그램 (post2) ─── */
+.layer-stack {
+  margin: 28px auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 480px;
+}
+.layer-item {
+  width: 100%;
+  padding: 14px 20px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--pam-text-primary);
+  border: 1px solid var(--pam-border);
+  background: var(--pam-bg-secondary);
+}
+.layer-item:first-child { border-radius: 12px 12px 0 0; }
+.layer-item:last-child  { border-radius: 0 0 12px 12px; }
+.layer-item.domain {
+  background: var(--pam-primary);
+  color: #000;
+  border-color: var(--pam-primary);
+}
+.layer-item small {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  margin-top: 3px;
+  opacity: 0.65;
+}
+.layer-arrow {
+  font-size: 11px;
+  color: var(--pam-text-tertiary);
+  padding: 5px 0;
+  width: 100%;
+  text-align: center;
+}
+.layer-rule {
+  font-size: 12px;
+  color: var(--pam-text-tertiary);
+  margin-top: 12px;
+  text-align: center;
+  font-style: italic;
+}
+
+/* ─── 타임라인 (post2) ─── */
+.timeline {
+  border-left: 2px solid var(--pam-border);
+  margin: 20px 0 20px 15px;
+  padding-left: 20px;
+}
+.timeline-item {
+  margin-bottom: 25px;
+  position: relative;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -27px;
+  top: 5px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--pam-primary);
+  border: 2px solid var(--pam-bg-secondary);
+}
+.timeline-item.fail::before {
+  background: #ff7b72;
+}
+.timeline-label {
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--pam-text-primary);
+}
+.timeline-item.fail .timeline-label {
+  color: #ff7b72;
+}
+.timeline-item p {
+  font-size: 14px;
+  color: var(--pam-text-secondary);
+  margin: 0;
+}

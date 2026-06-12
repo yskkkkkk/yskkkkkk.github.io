@@ -8,6 +8,8 @@ heroImage: ""
 draft: false
 ---
 
+import '../../styles/pam-blog.css';
+
 4년 동안 백엔드를 짰다. Spring Boot, JPA, 트랜잭션, 인증 — 이 영역은 자신 있다. 근데 개인 포트폴리오를 만들려다 보니 이상한 문제가 생겼다. 내가 만든 것들에 백엔드가 없었다.
 
 회사 코드는 공개할 수 없다. 개인 프로젝트가 내 실력을 보여주는 유일한 창구인데, 거기에 내가 4년 동안 쌓아온 것들이 하나도 안 들어가 있으면 의미가 없다.
@@ -23,9 +25,23 @@ draft: false
 
 실패 원인이 명확하니까 역으로 다음 조건이 나왔다.
 
-1. **⚡ 즉각성**: 들어와서 5초 안에 결과가 나와야 한다
-2. **📤 바이럴**: 결과를 자랑하고 싶게 만들어야 한다
-3. **🧩 단순함**: 처음 온 사람도 바로 쓸 수 있어야 한다
+<div class="condition-grid">
+  <div class="condition-card">
+    <div class="condition-icon">⚡</div>
+    <div class="condition-title">즉각성</div>
+    <div class="condition-desc">들어와서 5초 안에<br/>결과가 나와야 한다</div>
+  </div>
+  <div class="condition-card">
+    <div class="condition-icon">📤</div>
+    <div class="condition-title">바이럴</div>
+    <div class="condition-desc">결과를 자랑하고<br/>싶게 만들어야 한다</div>
+  </div>
+  <div class="condition-card">
+    <div class="condition-icon">🧩</div>
+    <div class="condition-title">단순함</div>
+    <div class="condition-desc">처음 온 사람도<br/>바로 쓸 수 있어야 한다</div>
+  </div>
+</div>
 
 조건을 쓰고 나니 아이디어가 빠르게 좁혀졌다. B급 감성 동물 사진에 '킹받는' 문구를 붙이는 가챠형 밈 생성기. 버튼 하나면 끝나고, 결과를 저장하거나 공유하고 싶어진다. 이게 피카밈의 시작이었다.
 
@@ -41,10 +57,29 @@ draft: false
 
 백엔드를 붙이기로 했다. 선택지는 두 가지였다.
 
-| 방식 | 장점 | 단점 |
-|---|---|---|
-| **Supabase (BaaS)** | PostgreSQL + Auth + Storage를 한 번에 해결. 빠르게 만들 수 있다. | JPA 없음. Spring Security 없음. 내가 쌓아온 것들이 보이지 않는다. |
-| **Kotlin + Spring Boot (선택)** | JPA, 트랜잭션, Security, 아키텍처 설계 — 백엔드 역량을 직접 보여줄 수 있다. | 초기 세팅에 시간이 훨씬 더 든다. |
+<div class="stack-table">
+  <table>
+    <thead>
+      <tr>
+        <th>방식</th>
+        <th>장점</th>
+        <th>단점</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="label">Supabase (BaaS)</td>
+        <td>PostgreSQL + Auth + Storage를 한 번에 해결. 빠르게 만들 수 있다.</td>
+        <td>JPA 없음. Spring Security 없음. 내가 쌓아온 것들이 보이지 않는다.</td>
+      </tr>
+      <tr>
+        <td class="chosen">Kotlin + Spring Boot</td>
+        <td class="chosen">JPA, 트랜잭션, Security, 아키텍처 설계 — 백엔드 역량을 직접 보여줄 수 있다.</td>
+        <td>초기 세팅에 시간이 훨씬 더 든다.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 Supabase가 편한 건 맞다. 근데 포트폴리오 목적이 명확한 프로젝트에서 BaaS를 쓰면 내가 증명하고 싶은 게 사라진다. JPA를 쓸 일도 없고, Spring Security를 설계할 일도 없다. 4년 동안 쌓아온 것들이 아무것도 안 들어가는 프로젝트가 된다.
 
@@ -54,13 +89,44 @@ Supabase가 편한 건 맞다. 근데 포트폴리오 목적이 명확한 프로
 
 DB는 PostgreSQL이 자연스러운 선택이었다. MySQL도 고민했지만 JSON 처리, 확장성, 그리고 생태계 측면에서 PostgreSQL을 선택했다. 호스팅은 NEON — 서버리스 PostgreSQL로 무료 티어 내에서 충분히 돌아간다.
 
-| 역할 | 선택 | 선택 이유 |
-|---|---|---|
-| 백엔드 | **Kotlin + Spring Boot** | JPA, Spring Security, Clean Architecture. 백엔드 역량 증명. |
-| 데이터베이스 | **NEON (PostgreSQL)** | 서버리스 PostgreSQL. 무료 티어. MySQL 대비 JSON 처리 우위. |
-| 캐시 / 하트 | **Upstash Redis** | 서버리스 Redis. 무료 티어. 하트 충전 Lazy Charging에 적합. |
-| 이미지 저장 | **Cloudflare R2** | S3 호환 API. 이그레스 비용 없음. |
-| 프론트엔드 | **Next.js 14 (App Router)** | 기존 프로토타입 기반. SSR + RSC 활용. |
+<div class="stack-table">
+  <table>
+    <thead>
+      <tr>
+        <th>역할</th>
+        <th>선택</th>
+        <th>선택 이유</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="label">백엔드</td>
+        <td class="chosen">Kotlin + Spring Boot</td>
+        <td>JPA, Spring Security, Clean Architecture. 백엔드 역량 증명.</td>
+      </tr>
+      <tr>
+        <td class="label">데이터베이스</td>
+        <td class="chosen">NEON (PostgreSQL)</td>
+        <td>서버리스 PostgreSQL. 무료 티어. MySQL 대비 JSON 처리 우위.</td>
+      </tr>
+      <tr>
+        <td class="label">캐시 / 하트</td>
+        <td class="chosen">Upstash Redis</td>
+        <td>서버리스 Redis. 무료 티어. 하트 충전 Lazy Charging에 적합.</td>
+      </tr>
+      <tr>
+        <td class="label">이미지 저장</td>
+        <td class="chosen">Cloudflare R2</td>
+        <td>S3 호환 API. 이그레스 비용 없음.</td>
+      </tr>
+      <tr>
+        <td class="label">프론트엔드</td>
+        <td class="chosen">Next.js 14 (App Router)</td>
+        <td>기존 프로토타입 기반. SSR + RSC 활용.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 Gradle 멀티 모듈로 백엔드를 4개 계층으로 분리했다. Clean Architecture + DDD로 설계한 이유는 Pet-Pass에서 배운 것 때문이었다 — 구조 없이 기능을 쌓으면 나중에 무너진다. 이 부분은 다음 글에서 이어진다.
 

@@ -8,6 +8,8 @@ heroImage: ""
 draft: false
 ---
 
+import '../../styles/pam-blog.css';
+
 ## 왜 Clean Architecture인가
 
 Pet-Pass 코드를 다시 들여다본 적이 있다. API 라우트 안에 DB 쿼리가 직접 들어 있었다. 데이터 가공 로직이 여러 파일에 중복으로 흩어져 있었다. 기능이 생길 때마다 파일 하나씩 추가한 결과였다.
@@ -23,15 +25,28 @@ Pet-Pass 코드를 다시 들여다본 적이 있다. API 라우트 안에 DB �
 
 Gradle 멀티 모듈로 4개 계층을 물리적으로 분리했다. 의존성 방향이 핵심이다. 바깥이 안쪽을 의존하고, 안쪽은 바깥을 모른다.
 
-```mermaid
-graph TD
-    A[pam-api<br>REST Controllers, Security — Delivery Layer] -->|의존| B[pam-application<br>UseCase Services, Event Listeners — Application Layer]
-    B -->|의존 / 구현| C((pam-domain<br>Pure Kotlin Entities, Repository Interfaces — Core))
-    D[pam-infrastructure<br>JPA Adapters, Redis, R2, jOOQ — Implementation Layer] -->|구현 의존 역전| C
-    
-    style C fill:#ff9900,stroke:#ff9900,stroke-width:2px,color:#fff
-```
-*(Domain은 아무것도 모른다. Infrastructure는 Domain을 구현할 뿐이다.)*
+<div class="layer-stack">
+  <div class="layer-item">
+    pam-api
+    <small>REST Controllers, Security — Delivery Layer</small>
+  </div>
+  <div class="layer-arrow">↓ 의존</div>
+  <div class="layer-item">
+    pam-application
+    <small>UseCase Services, Event Listeners — Application Layer</small>
+  </div>
+  <div class="layer-arrow">↓ 의존 &nbsp;|&nbsp; ↑ 구현</div>
+  <div class="layer-item domain">
+    pam-domain
+    <small>Pure Kotlin Entities, Repository Interfaces — Core</small>
+  </div>
+  <div class="layer-arrow">↑ 구현 (의존 역전)</div>
+  <div class="layer-item">
+    pam-infrastructure
+    <small>JPA Adapters, Redis, R2, jOOQ — Implementation Layer</small>
+  </div>
+</div>
+<p class="layer-rule">Domain은 아무것도 모른다. Infrastructure는 Domain을 구현할 뿐이다.</p>
 
 핵심은 `pam-domain`이다. 이 모듈에는 순수 Kotlin 객체만 들어간다. JPA 어노테이션 없음, Spring 의존 없음. 도메인 로직을 DB나 프레임워크 없이 단위 테스트할 수 있다.
 
@@ -54,10 +69,24 @@ data class User(
 
 AI는 동작하는 코드를 빠르게 만드는 데 최적화되어 있다. 계층이 있다는 걸 알아도, 가장 빠른 방법으로 문제를 풀려다 보면 레이어 경계를 넘어버린다. 의도가 아니라 최적화의 부작용이다.
 
-*   **시도 1 · 실패**: AI가 domain 엔티티에 `@Entity`, `@Column`을 달기 시작했다. Infrastructure에 있어야 할 JPA 매핑 로직이 domain으로 올라왔다. 코드는 돌아갔지만 계층 분리의 의미가 사라졌다.
-*   **시도 2 · 부분 성공**: 계층 규칙을 프롬프트에 명시했다. AI가 지키려 했지만 application에서 JPA Repository를 직접 주입하는 경우가 생겼다. domain Interface를 거쳐야 하는 흐름을 놓쳤다. 세션이 길어질수록 규칙을 잊어버렸다.
-*   **시도 3 · 부분 성공**: 매 세션 시작마다 규칙을 다시 설명했다. 지켜지긴 했지만 너무 번거로웠다. AI가 컨텍스트를 잃을 때마다 같은 설명을 반복해야 했다.
-*   **해결 · AIRULES.md**: 프로젝트 루트에 `AIRULES.md`를 만들었다. 계층 의존성 방향, 금지 사항, 도메인 순수성 규칙을 한 문서에 정리했다. AI가 세션마다 이 파일을 참조한다. 규칙이 코드 밖에 문서로 고정되니 일관성이 생겼다.
+<div class="timeline">
+  <div class="timeline-item fail">
+    <div class="timeline-label">시도 1 · 실패</div>
+    <p>AI가 domain 엔티티에 <code>@Entity</code>, <code>@Column</code>을 달기 시작했다. Infrastructure에 있어야 할 JPA 매핑 로직이 domain으로 올라왔다. 코드는 돌아갔지만 계층 분리의 의미가 사라졌다.</p>
+  </div>
+  <div class="timeline-item fail">
+    <div class="timeline-label">시도 2 · 부분 성공</div>
+    <p>계층 규칙을 프롬프트에 명시했다. AI가 지키려 했지만 application에서 JPA Repository를 직접 주입하는 경우가 생겼다. domain Interface를 거쳐야 하는 흐름을 놓쳤다. 세션이 길어질수록 규칙을 잊어버렸다.</p>
+  </div>
+  <div class="timeline-item fail">
+    <div class="timeline-label">시도 3 · 부분 성공</div>
+    <p>매 세션 시작마다 규칙을 다시 설명했다. 지켜지긴 했지만 너무 번거로웠다. AI가 컨텍스트를 잃을 때마다 같은 설명을 반복해야 했다.</p>
+  </div>
+  <div class="timeline-item">
+    <div class="timeline-label">해결 · AIRULES.md</div>
+    <p>프로젝트 루트에 <code>AIRULES.md</code>를 만들었다. 계층 의존성 방향, 금지 사항, 도메인 순수성 규칙을 한 문서에 정리했다. AI가 세션마다 이 파일을 참조한다. 규칙이 코드 밖에 문서로 고정되니 일관성이 생겼다.</p>
+  </div>
+</div>
 
 AIRULES.md가 효과적인 이유는 단순하다. AI의 단기 기억은 세션 단위로 리셋된다. 하지만 파일은 리셋되지 않는다. 설계 의도를 코드가 아니라 문서로 고정하면, AI가 새 세션에서도 같은 구조 위에서 작업할 수 있다.
 

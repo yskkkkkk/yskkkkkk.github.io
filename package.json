@@ -11,6 +11,7 @@
     "new-post": "node scripts/new-post.mjs"
   },
   "dependencies": {
+    "@astrojs/mdx": "^4.0.0",
     "@astrojs/sitemap": "^3.2.1",
     "astro": "^5.0.0"
   },
