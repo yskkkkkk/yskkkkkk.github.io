@@ -28,7 +28,7 @@ draft: false
 <br/>
 
 <div style="text-align: center; margin: 40px 0;">
-  <a href="https://pet-pass.vercel.app/blog/post1" target="_blank" rel="noopener noreferrer" style="background-color: var(--primary); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+  <a href="https://pet-pass-web.vercel.app/blog/post1" target="_blank" rel="noopener noreferrer" style="background-color: var(--primary); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
     👉 Pet-Pass 오리지널 블로그에서 전체 글 읽기
   </a>
 </div>
