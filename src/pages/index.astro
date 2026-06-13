@@ -14,9 +14,11 @@ const allPosts = await getCollection('blog', ({ data }) => !data.draft && !data.
 const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const recentPosts = sortedPosts.slice(0, 5);
 
+const allPostsForSeries = await getCollection('blog', ({ data }) => !data.draft && !!data.series);
+
 const seriesMap = new Map<string, { name: string; slug: string; description: string; count: number; minDate: Date; maxDate: Date }>();
 
-allPosts.forEach(post => {
+allPostsForSeries.forEach(post => {
   const seriesName = post.data.series;
   if (!seriesName) return;
 
