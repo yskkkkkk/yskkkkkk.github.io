@@ -13,7 +13,7 @@ interface Props {
 const { title, description, image } = Astro.props;
 
 // Fetch all non-draft posts for search index
-const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const allPosts = await getCollection('blog', ({ data }) => !data.draft && !data.externalUrl);
 const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 // Helper to format date exactly like ko-KR 'YYYY.MM.DD'

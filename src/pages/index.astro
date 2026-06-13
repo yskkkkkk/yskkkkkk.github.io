@@ -10,7 +10,7 @@ const formatYearMonth = (date: Date) => {
   return `${y}.${m}`;
 };
 
-const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const allPosts = await getCollection('blog', ({ data }) => !data.draft && !data.externalUrl);
 const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const recentPosts = sortedPosts.slice(0, 5);
 

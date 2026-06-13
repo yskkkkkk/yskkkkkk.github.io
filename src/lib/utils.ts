@@ -1,5 +1,5 @@
-export function readingTime(body: string): number {
-  const stripped = body
+export function readingTime(body: string | undefined): number {
+  const stripped = (body ?? '')
     .replace(/```[\s\S]*?```/g, ' ')
     .replace(/`[^`]*`/g, ' ')
     .replace(/!\[.*?\]\(.*?\)/g, ' ')
