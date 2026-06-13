@@ -24,6 +24,7 @@ const projects = defineCollection({
     heroImage: z.string().optional(),
     repoUrl: z.string().url().optional(),
     liveUrl: z.string().url().optional(),
+    blogUrl: z.string().url().optional(),
     tags: z.array(z.string()).default([]),
     featured: z.boolean().default(false),
   }),

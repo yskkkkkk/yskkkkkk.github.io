@@ -26,6 +26,7 @@ const projects = (await getCollection('projects'))
             <div class="links">
               {project.data.repoUrl && <span class="link-badge">repo</span>}
               {project.data.liveUrl && <span class="link-badge live">live</span>}
+              {project.data.blogUrl && <span class="link-badge blog">blog</span>}
             </div>
           </div>
           <p class="project-description">{project.data.description}</p>
@@ -112,6 +113,11 @@ const projects = (await getCollection('projects'))
   .link-badge.live {
     border-color: rgba(100, 200, 100, 0.3);
     color: #6dc96d;
+  }
+
+  .link-badge.blog {
+    border-color: rgba(100, 160, 240, 0.3);
+    color: #7ab4f0;
   }
 
   .project-description {
