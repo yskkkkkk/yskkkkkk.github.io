@@ -1,5 +1,5 @@
-export function readingTime(body: string): number {
-  const stripped = body
+export function readingTime(body: string | undefined): number {
+  const stripped = (body ?? '')
     .replace(/```[\s\S]*?```/g, ' ')
     .replace(/`[^`]*`/g, ' ')
     .replace(/!\[.*?\]\(.*?\)/g, ' ')
@@ -17,6 +17,14 @@ export function formatDate(date: Date): string {
 }
 
 export const SERIES_META: Record<string, { slug: string; description: string }> = {
+  '피카밈 개발기': {
+    slug: 'pika-a-meme',
+    description: 'Kotlin/Spring Boot + Next.js로 만든 가챠형 밈 생성기 개발 기록. Clean Architecture, Redis 하트 시스템, OAuth2 쿠키 디버깅, Rate Limiting 등 1개월 풀스택 개발의 기술적 선택과 실패를 솔직하게 기록합니다.',
+  },
+  'Pet-Pass 개발기': {
+    slug: 'pet-pass',
+    description: 'AI 협업(바이브 코딩) 방식으로 3주 만에 완성한 반려동물 동반 가능 매장 탐색 서비스 개발 기록. GitHub Actions 데이터 파이프라인, Kakao Maps 통합, 모바일 UX 설계까지.',
+  },
   'Redis 프로젝트 회고': {
     slug: 'redis-project',
     description: '실제 대규모 서비스에 Redis 캐시를 도입하면서 겪은 기술적 문제들과 해결 과정. 분산 캐시 동기화, 동시성 이슈, 대규모 장애 대응까지.',
