@@ -19,11 +19,11 @@ export function formatDate(date: Date): string {
 export const SERIES_META: Record<string, { slug: string; description: string }> = {
   '피카밈 개발기': {
     slug: 'pika-a-meme',
-    description: 'Kotlin/Spring Boot + Next.js로 만든 가챠형 밈 생성기 개발 기록. Clean Architecture, Redis 하트 시스템, OAuth2 쿠키 디버깅, Rate Limiting 등 1개월 풀스택 개발의 기술적 선택과 실패를 솔직하게 기록합니다.',
+    description: '가벼운 가챠형 밈 서비스 뒤에 실무 수준 백엔드를 의도적으로 설계한 1개월 풀스택 기록. 토이 프로젝트에도 Clean Architecture·DDD를 적용한 이유, 분산 락 기반 하트 동시성 제어, Redis 캐시·Rate Limiting·OAuth2 디버깅까지 기술적 선택과 실패를 솔직하게 담았습니다.',
   },
   'Pet-Pass 개발기': {
     slug: 'pet-pass',
-    description: 'AI 협업(바이브 코딩) 방식으로 3주 만에 완성한 반려동물 동반 가능 매장 탐색 서비스 개발 기록. GitHub Actions 데이터 파이프라인, Kakao Maps 통합, 모바일 UX 설계까지.',
+    description: 'AI 페어코딩만으로 서비스를 처음부터 끝까지 출시할 수 있는지 검증한 첫 풀스택 실험. 웹 스크래핑의 한계를 공공데이터 파이프라인으로 전환하고, GitHub Actions로 사람 손 없이 매일 데이터가 갱신되는 구조를 만든 과정을 기록합니다.',
   },
   'Redis 프로젝트 회고': {
     slug: 'redis-project',

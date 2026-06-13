@@ -10,14 +10,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <p class="about-role">Backend Engineer</p>
       
       <p class="about-bio">
-        실제 대규모 서비스에서 Redis 캐시 도입, 분산 시스템 설계, 장애 대응을 경험한 백엔드 엔지니어입니다.
-        아는 척하지 않고, 삽질한 것들을 솔직하게 기록합니다.
-        Java · Spring Boot · Redis · MySQL을 주로 다루며,
-        "완료"보다 "지속 개선"이 더 중요하다고 믿습니다.
+        대규모 커머스·복지 도메인에서 결제·캐시 시스템을 다뤄온 5년 차 백엔드 엔지니어입니다.
+        화려한 기술보다 안정성과 데이터 정합성을 우선하고, 오버엔지니어링을 경계하며
+        내 선택의 트레이드오프까지 스스로 짚으려 합니다.
+        대규모 트래픽 환경에서 Redis 다단계 캐시 설계·운영, 결제 PG 연동, 장애 대응을 경험했고,
+        아는 척하지 않고, 직접 겪은 것들을 솔직하게 기록합니다.
       </p>
 
       <div class="about-skills">
-        {['Java', 'Spring Boot', 'Redis', 'MySQL', 'MyBatis', 'CompletableFuture', 'Lettuce', 'AWS'].map(skill => (
+        {['Java', 'Spring Boot', 'Spring Security', 'JPA', 'MyBatis', 'Redis', 'Caffeine', 'MySQL', 'Kafka', 'WebSocket', 'Docker'].map(skill => (
           <span class="about-skill">{skill}</span>
         ))}
       </div>
@@ -40,7 +41,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </a>
 
         <!-- LinkedIn -->
-        <a href="https://linkedin.com" target="_blank" rel="noreferrer" class="contact-item">
+        <a href="https://www.linkedin.com/in/daesung-ryu/" target="_blank" rel="noreferrer" class="contact-item">
           <div class="contact-icon" style="background: var(--bg2); color: #0077b5;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
@@ -48,7 +49,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           </div>
           <div class="contact-info">
             <span class="contact-label">LinkedIn</span>
-            <span class="contact-handle">linkedin.com/in/yskkkkkk</span>
+            <span class="contact-handle">/daesung-ryu/</span>
           </div>
           <span class="contact-arrow">→</span>
         </a>
@@ -62,7 +63,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           </div>
           <div class="contact-info">
             <span class="contact-label">Notion</span>
-            <span class="contact-handle">포트폴리오 / 노트</span>
+            <span class="contact-handle">이력서/포트폴리오</span>
           </div>
           <span class="contact-arrow">→</span>
         </a>

@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { SITE_DESCRIPTION } from '../consts';
-import { seriesSlug, formatDate, readingTime } from '../lib/utils';
+import { seriesSlug, formatDate, readingTime, SERIES_META } from '../lib/utils';
 
 const formatYearMonth = (date: Date) => {
   const y = date.getFullYear();
@@ -14,9 +14,11 @@ const allPosts = await getCollection('blog', ({ data }) => !data.draft && !data.
 const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const recentPosts = sortedPosts.slice(0, 5);
 
+const allPostsForSeries = await getCollection('blog', ({ data }) => !data.draft && !!data.series);
+
 const seriesMap = new Map<string, { name: string; slug: string; description: string; count: number; minDate: Date; maxDate: Date }>();
 
-allPosts.forEach(post => {
+allPostsForSeries.forEach(post => {
   const seriesName = post.data.series;
   if (!seriesName) return;
 
@@ -45,7 +47,7 @@ allPosts.forEach(post => {
 const seriesList = Array.from(seriesMap.values()).map(s => ({
   name: s.name,
   slug: s.slug,
-  description: s.description,
+  description: SERIES_META[s.name]?.description ?? s.description,
   count: s.count,
   rangeLabel: `${formatYearMonth(s.minDate)} – ${formatYearMonth(s.maxDate)}`
 }));
@@ -56,8 +58,8 @@ const seriesList = Array.from(seriesMap.values()).map(s => ({
   <div class="page-wrap">
     <section class="hero-v11">
       <div class="hero-v11-eyebrow">Backend Engineer</div>
-      <h1 class="hero-v11-title">삽질과 배움을<br/>솔직하게 기록합니다.</h1>
-      <p class="hero-v11-sub">Java · Redis · 분산 시스템. 운영에서만 보이는 것들을 씁니다.</p>
+      <h1 class="hero-v11-title">운영에서 마주친 것들을<br/>솔직하게 기록합니다.</h1>
+      <p class="hero-v11-sub">Java · Redis · 분산 시스템. 그 과정에서 배운 것들을 씁니다.</p>
     </section>
 
     {recentPosts.length > 0 && (

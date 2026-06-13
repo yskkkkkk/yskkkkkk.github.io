@@ -49,7 +49,7 @@ const calculateReadingTime = (body: string) => {
 const readingTime = calculateReadingTime(postBody);
 
 // Retrieve posts in same series
-let seriesPosts = [];
+let seriesPosts: { title: string; slug: string; order: number; externalUrl?: string }[] = [];
 if (series) {
   seriesPosts = allPosts
     .filter(p => !p.data.draft && p.data.series === series)
