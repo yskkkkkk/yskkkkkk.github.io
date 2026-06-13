@@ -1,6 +1,6 @@
 ---
 title: "Pet-Pass"
-description: "반려동물 동반 가능 매장을 카카오 지도로 탐색하는 서비스. AI 협업(바이브 코딩) 방식으로 3주 만에 완성한 첫 번째 풀스택 프로젝트."
+description: "AI 페어코딩만으로 서비스를 처음부터 끝까지 출시할 수 있는지 검증한 첫 풀스택 실험. 웹 스크래핑의 한계를 공공데이터 파이프라인으로 전환하고, GitHub Actions로 사람 손 없이 매일 데이터가 갱신되는 구조를 구성했다."
 pubDate: 2026-04-01
 repoUrl: "https://github.com/yskkkkkk/pet-pass-web"
 liveUrl: "https://pet-pass-web.vercel.app"
@@ -9,7 +9,7 @@ tags: ["Vanilla JS", "Node.js", "Supabase", "Vercel", "Kakao Maps API", "GitHub 
 featured: false
 ---
 
-정부 공공데이터에서 반려동물 동반 가능 매장을 수집해 카카오 지도 위에 표시하는 서비스. GitHub Actions 스케줄러가 매일 데이터를 갱신하고, Supabase PostgreSQL에 저장한다.
+백엔드 엔지니어가 AI 페어코딩만으로 서비스를 처음부터 끝까지 출시할 수 있는지 확인하려고 시작한 첫 풀스택 프로젝트다. "반려동물 동반 매장 지도"라는 기능 자체보다, **AI와 어디까지 함께 만들 수 있는가**와 **데이터를 사람 손 없이 어떻게 계속 살아있게 할 것인가**가 핵심 질문이었다.
 
 ## 인프라
 

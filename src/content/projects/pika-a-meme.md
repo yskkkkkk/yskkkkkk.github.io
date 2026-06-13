@@ -1,6 +1,6 @@
 ---
 title: "피카밈 (pick-a-meme)"
-description: "동물 사진 + B급 감성 문구 조합 가챠형 밈 생성기. Kotlin/Spring Boot 백엔드와 Next.js 프론트엔드로 구성한 풀스택 포트폴리오 프로젝트."
+description: "가벼운 가챠형 밈 서비스 뒤에 실무 수준 백엔드를 의도적으로 설계한 프로젝트. 토이 프로젝트에도 Clean Architecture·DDD를 적용하고, 분산 락 기반 하트 동시성 제어와 Redis 캐시·Rate Limiting·OAuth2를 다뤘다."
 pubDate: 2026-05-01
 repoUrl: "https://github.com/yskkkkkk/pika-a-meme_full"
 liveUrl: "https://pick-a-me.me"
@@ -9,7 +9,7 @@ tags: ["Kotlin", "Spring Boot", "Next.js", "PostgreSQL", "Redis", "Cloudflare R2
 featured: true
 ---
 
-버튼 하나로 동물 사진·문구·스티커가 무작위 조합되는 가챠형 밈 생성기. 비로그인 사용자도 결과를 링크로 공유할 수 있고, 로그인 시 저장·갤러리 기능을 이용할 수 있다.
+Pet-Pass에서 "AI로 빠르게 만들 수 있다"를 확인한 뒤, 이번엔 "BaaS 없이 백엔드 역량을 그대로 증명한다"를 목표로 잡았다. 가챠형 밈 생성기라는 가벼운 외형을 택한 건, 그 뒤에 실무 수준의 아키텍처와 동시성 제어를 넣기 위해서였다. 버튼 한 번에 동물 사진·문구·스티커가 조합되는 단순한 화면 아래에서, 실제로 풀고 싶었던 건 다음 문제들이다.
 
 ## 아키텍처
 
