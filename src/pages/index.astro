@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { SITE_DESCRIPTION } from '../consts';
-import { seriesSlug, formatDate, readingTime } from '../lib/utils';
+import { seriesSlug, formatDate, readingTime, SERIES_META } from '../lib/utils';
 
 const formatYearMonth = (date: Date) => {
   const y = date.getFullYear();
@@ -47,7 +47,7 @@ allPostsForSeries.forEach(post => {
 const seriesList = Array.from(seriesMap.values()).map(s => ({
   name: s.name,
   slug: s.slug,
-  description: s.description,
+  description: SERIES_META[s.name]?.description ?? s.description,
   count: s.count,
   rangeLabel: `${formatYearMonth(s.minDate)} – ${formatYearMonth(s.maxDate)}`
 }));
