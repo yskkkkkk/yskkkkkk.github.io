@@ -507,6 +507,69 @@ img {
   color: var(--text3);
 }
 
+/* ── Series Chips ── */
+.series-chips-section {
+  margin-bottom: 80px;
+}
+.series-chips-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.series-chip-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius); /* 10px (애플식 부드러운 라운드) */
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+.series-chip-item:hover {
+  transform: translateY(-2px);
+  background: var(--bg);
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.series-chip-emoji {
+  font-size: 16px;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+}
+.series-chip-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  transition: color 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.series-chip-item:hover .series-chip-name {
+  color: var(--accent);
+}
+.series-chip-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-bg);
+  padding: 2px 7px;
+  border-radius: 6px;
+  margin-left: auto; /* 우측 정렬 */
+}
+
+/* 모바일 반응형 대응 */
+@media (max-width: 768px) {
+  .series-chips-container {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+
 /* ── Blog List ── */
 .blog-list-page {
   padding: 48px 0 80px;
@@ -1265,26 +1328,35 @@ img {
   margin: 0 auto;
   padding: 24px 32px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 20px;
   font-size: 13px;
   color: var(--text3);
   flex-wrap: wrap;
-}
-.footer-logo {
-  font-weight: 600;
-  color: var(--text2);
+  gap: 16px;
 }
 .footer-copy {
-  flex: 1;
-  min-width: 200px;
+  color: var(--text3);
+}
+.footer-links {
+  display: flex;
+  gap: 16px;
 }
 .footer-links a {
   color: var(--text3);
+  text-decoration: none;
   transition: color 0.15s;
 }
 .footer-links a:hover {
   color: var(--accent);
+}
+
+@media (max-width: 768px) {
+  .footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
 }
 
 /* ── Search Modal ── */
