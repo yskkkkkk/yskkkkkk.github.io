@@ -1326,7 +1326,7 @@ img {
 .footer-inner {
   max-width: 960px;
   margin: 0 auto;
-  padding: 20px 32px;
+  padding: 24px 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1335,22 +1335,8 @@ img {
   flex-wrap: wrap;
   gap: 16px;
 }
-.footer-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.footer-logo {
-  font-weight: 600;
-  color: var(--text2);
-}
 .footer-copy {
   color: var(--text3);
-}
-.footer-tagline {
-  font-size: 12px;
-  color: var(--text3);
-  opacity: 0.8;
 }
 .footer-links {
   display: flex;
@@ -1370,11 +1356,6 @@ img {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
-  }
-  .footer-info {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
   }
 }
 
