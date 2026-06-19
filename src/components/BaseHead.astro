@@ -1,27 +1,58 @@
 ---
 import '../styles/global.css';
-import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL } from '../consts';
+import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL, AUTHOR, GOOGLE_SITE_VERIFICATION, NAVER_SITE_VERIFICATION } from '../consts';
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
+  article?: {
+    pubDate: Date;
+    updatedDate?: Date;
+    tags?: string[];
+  };
 }
 
 const {
   title,
   description = SITE_DESCRIPTION,
   image = '/og-default.png',
+  article,
 } = Astro.props;
 
 const pageTitle = title ? `${title} — ${SITE_TITLE}` : SITE_TITLE;
 const canonicalURL = new URL(Astro.url.pathname, SITE_URL);
+const imageURL = new URL(image, SITE_URL);
+
+// 블로그 포스트면 BlogPosting 스키마, 그 외엔 WebSite 스키마
+const jsonLd = article
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: title,
+      description,
+      image: imageURL.href,
+      datePublished: article.pubDate.toISOString(),
+      ...(article.updatedDate && { dateModified: article.updatedDate.toISOString() }),
+      author: { '@type': 'Person', name: AUTHOR },
+      publisher: { '@type': 'Person', name: AUTHOR },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalURL.href },
+      ...(article.tags?.length && { keywords: article.tags.join(', ') }),
+    }
+  : {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: SITE_TITLE,
+      description: SITE_DESCRIPTION,
+      url: SITE_URL,
+    };
 ---
 
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="sitemap" href="/sitemap-index.xml" />
+<link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href={new URL('rss.xml', SITE_URL)} />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -41,16 +72,34 @@ const canonicalURL = new URL(Astro.url.pathname, SITE_URL);
 
 <title>{pageTitle}</title>
 <meta name="description" content={description} />
+{GOOGLE_SITE_VERIFICATION && (
+  <meta name="google-site-verification" content={GOOGLE_SITE_VERIFICATION} />
+)}
+{NAVER_SITE_VERIFICATION && (
+  <meta name="naver-site-verification" content={NAVER_SITE_VERIFICATION} />
+)}
 
 <!-- Open Graph -->
-<meta property="og:type" content="website" />
+<meta property="og:type" content={article ? 'article' : 'website'} />
 <meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={pageTitle} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image, SITE_URL)} />
+<meta property="og:image" content={imageURL} />
+{article && (
+  <meta property="article:published_time" content={article.pubDate.toISOString()} />
+)}
+{article?.updatedDate && (
+  <meta property="article:modified_time" content={article.updatedDate.toISOString()} />
+)}
+{article?.tags?.map((tag) => (
+  <meta property="article:tag" content={tag} />
+))}
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={pageTitle} />
 <meta name="twitter:description" content={description} />
-<meta name="twitter:image" content={new URL(image, SITE_URL)} />
+<meta name="twitter:image" content={imageURL} />
+
+<!-- Structured Data -->
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />

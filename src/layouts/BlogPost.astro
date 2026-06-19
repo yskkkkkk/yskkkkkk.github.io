@@ -66,7 +66,12 @@ const seriesSlug = series ? toSeriesSlug(series) : '';
 const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout
+  title={title}
+  description={description}
+  image={heroImage || undefined}
+  article={{ pubDate, updatedDate, tags }}
+>
   <!-- Reading Progress Bar -->
   <div class="reading-progress" id="reading-progress-bar"></div>
 
