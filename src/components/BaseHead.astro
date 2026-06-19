@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL, AUTHOR } from '../consts';
+import { SITE_TITLE, SITE_DESCRIPTION, SITE_URL, AUTHOR, GOOGLE_SITE_VERIFICATION, NAVER_SITE_VERIFICATION } from '../consts';
 
 interface Props {
   title?: string;
@@ -72,6 +72,12 @@ const jsonLd = article
 
 <title>{pageTitle}</title>
 <meta name="description" content={description} />
+{GOOGLE_SITE_VERIFICATION && (
+  <meta name="google-site-verification" content={GOOGLE_SITE_VERIFICATION} />
+)}
+{NAVER_SITE_VERIFICATION && (
+  <meta name="naver-site-verification" content={NAVER_SITE_VERIFICATION} />
+)}
 
 <!-- Open Graph -->
 <meta property="og:type" content={article ? 'article' : 'website'} />
