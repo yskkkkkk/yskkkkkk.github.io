@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>안전한 결제 시스템을 위한 아키텍처 개편 - 6월 회고</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* ==========================================
+       MODERN PROFESSIONAL LIGHT THEME (v2.0)
+       ========================================== */
+    :root {
+      --bg-body: #f8fafc; 
+      --bg-panel: #ffffff;
+      --border-panel: #e2e8f0; 
+      
+      --accent-primary: #2563eb; 
+      --accent-secondary: #0f172a; 
+      --accent-success: #059669; 
+      --accent-danger: #dc2626; 
+      --accent-warning: #d97706; 
+      --accent-deepdive: #4f46e5;
+      
+      --text-main: #334155; 
+      --text-muted: #64748b; 
+    }
+
+    body {
+      font-family: 'Inter', sans-serif !important;
+      background-color: var(--bg-body) !important;
+      color: var(--text-main) !important;
+      overflow: hidden;
+      background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .reveal { z-index: 2; }
+    .reveal .slides { text-align: left !important; }
+
+    .reveal .progress { height: 5px !important; background: var(--border-panel) !important; }
+    .reveal .progress span { background: var(--accent-primary) !important; }
+    .reveal .controls button { color: var(--text-muted) !important; }
+
+    /* Tech Panel Cards */
+    .slide-container {
+      display: flex; flex-direction: column; justify-content: center;
+      height: 100%; padding: 0 20px; box-sizing: border-box;
+    }
+
+    .tech-panel {
+      background: var(--bg-panel); border: 1px solid var(--border-panel); border-radius: 16px;
+      padding: 45px 55px; box-shadow: 0 10px 40px -10px rgba(15, 23, 42, 0.1);
+      position: relative; overflow: hidden;
+    }
+
+    .tech-panel::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
+      background: linear-gradient(90deg, var(--accent-primary), #60a5fa);
+    }
+    .tech-panel.danger::before { background: linear-gradient(90deg, var(--accent-danger), #f87171); }
+    .tech-panel.warning::before { background: linear-gradient(90deg, var(--accent-warning), #fbbf24); }
+    .tech-panel.deepdive::before { background: linear-gradient(90deg, var(--accent-deepdive), #818cf8); }
+
+    /* Typography */
+    h1.slide-title {
+      font-family: 'Inter', sans-serif !important; font-size: 2.5rem !important;
+      font-weight: 800 !important; line-height: 1.3 !important; margin-bottom: 24px !important;
+      color: var(--accent-secondary) !important; letter-spacing: -1px;
+    }
+
+    .slide-subtitle {
+      font-size: 0.95rem; font-weight: 700; color: var(--accent-primary);
+      text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .slide-subtitle.deepdive { color: var(--accent-deepdive); }
+
+    p.slide-desc { font-size: 1.1rem; line-height: 1.7; color: var(--text-main); margin-bottom: 20px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: stretch; }
+
+    /* Code Terminal */
+    .code-terminal {
+      background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.5;
+    }
+    .code-header { background: #e2e8f0; padding: 10px 16px; color: #475569; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .code-body { padding: 20px; color: #1e293b; white-space: pre-wrap; }
+
+    /* Scenario Flow */
+    .scenario-box {
+      background: #fff5f5; border: 1px solid #fecaca; border-radius: 12px; padding: 25px;
+      text-align: center; box-shadow: 0 4px 6px -1px rgba(220,38,38,0.05);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- ==================================================
+           PART 1: SERVICE IMPACT (비즈니스 & 프로덕트 관점)
+           ================================================== -->
+      
+      <!-- SLIDE 1: COVER -->
+      <section>
+        <div class="slide-container">
+          <div class="tech-panel" style="padding: 70px 60px; text-align: center;">
+            <div class="slide-subtitle" style="justify-content: center; color: var(--text-muted);">
+              TECH RETROSPECTIVE 2026.06
+            </div>
+            <h1 class="slide-title" style="font-size: 3.2rem !important; margin-top: 10px; color: var(--accent-secondary) !important;">
+              안전한 결제 시스템을 위한<br>아키텍처 개편
+            </h1>
+            <h3 style="font-weight: 400; color: var(--text-muted); font-size: 1.4rem; margin-bottom: 40px;">
+              데이터 정합성 확보와 시스템 안정성을 향하여
+            </h3>
+            <div style="display: inline-block; padding: 10px 28px; border-radius: 30px; background: #f1f5f9; border: 1px solid #e2e8f0;">
+              <span style="color: var(--accent-secondary); font-weight: 700;">Presenter:</span> 류대성
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 2: THE BUSINESS NIGHTMARE -->
+      <section>
+        <div class="slide-container">
+          <div class="tech-panel danger">
+            <div class="slide-subtitle" style="color: var(--accent-danger);"><i class="fa-solid fa-triangle-exclamation"></i> 01. 서비스 리스크</div>
+            <h1 class="slide-title" style="color: var(--accent-danger) !important;">우리가 당장 해결해야 할 문제</h1>
+            <p class="slide-desc" style="font-size: 1.25rem; font-weight: 600; text-align: center; margin: 30px 0;">
+              "고객의 돈은 정상적으로 빠져나갔는데, 우리 시스템에는 주문 내역이 없다면?"
+            </p>
+            
+            <div class="scenario-box" style="margin-top: 20px;">
+              <h3 style="color: var(--accent-danger); font-size: 1.15rem; margin-bottom: 15px; font-weight: 700;">현재 시스템의 결제 실패 시나리오</h3>
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 15px; color: var(--text-main); font-weight: 600;">
+                <div style="flex: 1; padding: 15px; background: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0;">1. PG사 결제 승인<br><span style="font-size:0.85rem; color:var(--accent-success);">(고객 돈 출금 성공)</span></div>
+                <i class="fa-solid fa-arrow-right" style="color: var(--text-muted);"></i>
+                <div style="flex: 1; padding: 15px; background: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0;">2. 시스템 내부 처리 중<br><span style="font-size:0.85rem; color:var(--accent-danger);">(일시적 장애/에러 발생)</span></div>
+                <i class="fa-solid fa-arrow-right" style="color: var(--text-muted);"></i>
+                <div style="flex: 1; padding: 15px; background: #fef2f2; border-radius: 8px; border: 1px solid #fecaca; color: var(--accent-danger);">3. 복구 실패<br><span style="font-size:0.85rem;">(주문/재고 불일치 발생)</span></div>
+              </div>
+            </div>
+            <p class="slide-desc" style="margin-top: 25px; text-align: center; color: var(--text-muted);">
+              현재 구조에서는 에러 발생 시 상태를 이전으로 되돌리는 <strong>'안전망(Rollback)'</strong>이 작동하지 않아 고객 CS와 신뢰도 하락으로 직결될 위험이 있습니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 3: WHY IS IT BROKEN? -->
+      <section>
+        <div class="slide-container">
+          <div class="tech-panel">
+            <div class="slide-subtitle"><i class="fa-solid fa-shield-halved"></i> 02. 근본 원인</div>
+            <h1 class="slide-title">찢겨진 안전망: 데이터 정합성 파괴</h1>
+            <p class="slide-desc">
+              데이터베이스에는 여러 작업이 한 몸처럼 움직이도록 묶어주는 <strong>'트랜잭션(Transaction)'</strong>이라는 기능이 있습니다.<br>
+              하나라도 실패하면 전체를 취소(Rollback)하여 사고를 막아줍니다.
+            </p>
+            <div class="grid-2" style="margin-top: 20px;">
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 25px; border-radius: 12px;">
+                <h3 style="color: var(--accent-secondary); font-size: 1.15rem; margin-bottom: 10px; font-weight: 700;"><i class="fa-solid fa-link-slash"></i> 현재: 파편화된 로직</h3>
+                <p style="font-size: 0.95rem; color: var(--text-muted); margin: 0; line-height: 1.6;">
+                  현재 시스템은 주문 생성, 재고 차감, 로그 저장 등이 완전히 <strong>단절된 채 쪼개져서 실행</strong>됩니다. 중간에 에러가 나도 앞의 작업이 취소되지 않아 데이터가 꼬이게 됩니다.
+                </p>
+              </div>
+              <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 25px; border-radius: 12px;">
+                <h3 style="color: var(--accent-success); font-size: 1.15rem; margin-bottom: 10px; font-weight: 700;"><i class="fa-solid fa-link"></i> 목표: 거대한 하나의 흐름</h3>
+                <p style="font-size: 0.95rem; color: #166534; margin: 0; line-height: 1.6;">
+                  결제 완료 후 일어나는 모든 DB 작업을 <strong>하나의 거대한 트랜잭션</strong>으로 묶어, 무조건 다 같이 성공하거나 다 같이 실패하도록 보호해야 합니다.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: CASE STUDY -->
+      <section>
+        <div class="slide-container">
+          <div class="tech-panel warning">
+            <div class="slide-subtitle" style="color: var(--accent-warning);"><i class="fa-solid fa-file-invoice"></i> 03. 실제 사례 (Case Study)</div>
+            <h1 class="slide-title">트랜잭션 파편화로 인한 데이터 오염</h1>
+            <p class="slide-desc" style="margin-bottom: 20px;">
+              이벤트로 다건의 사은품을 지급하는 <code>selectApplyTicketEventOrder</code> 로직을 생각해보겠습니다.<br>
+              개발자의 의도는 <strong>"사은품 중 하나라도 지급에 실패하면 전체를 취소(Rollback)하자"</strong> 였을 것입니다.
+            </p>
+
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+              <!-- Target Logic -->
+              <div style="background: #eef2ff; padding: 12px 20px; border-bottom: 1px solid #e2e8f0; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--accent-deepdive); font-weight: 700;">
+                <i class="fa-solid fa-rotate"></i> Loop: insertApplyTicketEventGift() (총 5개 지급 예정)
+              </div>
+              
+              <!-- Reality Flow -->
+              <div style="padding: 25px;">
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                  <div style="display: flex; align-items: center; gap: 15px;">
+                    <span style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; min-width: 80px; text-align: center;">성공</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--text-main);">사은품 1번 Insert <span style="color: var(--text-muted);">(Auto-Commit 됨)</span></span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 15px;">
+                    <span style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; min-width: 80px; text-align: center;">성공</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--text-main);">사은품 2번 Insert <span style="color: var(--text-muted);">(Auto-Commit 됨)</span></span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 15px;">
+                    <span style="background: #fee2e2; color: #b91c1c; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; min-width: 80px; text-align: center;">에러 발생</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--accent-danger); font-weight: 600;">사은품 3번 Insert 실패! <span style="color: var(--accent-danger);">(Exception)</span></span>
+                  </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed #cbd5e1;">
+                  <h4 style="color: var(--accent-danger); font-size: 1.05rem; margin-bottom: 8px; font-weight: 700;">결과: 부분 커밋(Partial Commit)에 따른 데이터 불일치</h4>
+                  <p style="font-size: 0.95rem; color: var(--text-main); line-height: 1.6; margin: 0;">
+                    하나의 트랜잭션으로 묶여있지 않기 때문에 롤백은 일어나지 않습니다. <br>
+                    결국 에러로 인해 시스템 프로세스는 중단되었지만, <strong>이미 DB에 입력된 1번, 2번 사은품 내역은 그대로 남아 불완전한 상태의 데이터가 영구적으로 저장됩니다.</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================
+           PART 2: DEEP DIVE (개발 파트 관점)
+           ================================================== -->
+      
+      <!-- SLIDE 5: DEEP DIVE DIVIDER -->
+      <section>
+        <div class="slide-container">
+          <div class="tech-panel deepdive" style="padding: 70px 60px; text-align: center; background: #eef2ff;">
+            <i class="fa-solid fa-microchip" style="font-size: 4rem; color: var(--accent-deepdive); margin-bottom: 20px;"></i>
+            <h1 class="slide-title" style="font-size: 2.8rem !important; color: var(--accent-deepdive) !important;">
+              Deep Dive
+            </h1>
+            <h3 style="font-weight: 600; color: var(--accent-secondary); font-size: 1.4rem;">
+              어쩌다 우리의 안전망은 찢어졌는가? (기술적 팩트 체크)
+            </h3>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 6: DEAD CODE (Updated with selectApplyTicketEventOrder) -->
+      <section>
+        <div class="slide-container">
+          <div class="tech-panel deepdive">
+            <div class="slide-subtitle deepdive"><i class="fa-solid fa-magnifying-glass"></i> Deep Dive 01</div>
+            <h1 class="slide-title">작동하지 않는 어노테이션들</h1>
+            <p class="slide-desc" style="margin-bottom: 15px;">
+              사실 코드를 살펴보면 나름대로 사은품 발급 실패를 방지하기 위한 흔적이 있습니다.<br>
+              앞서 본 <code>selectApplyTicketEventOrder</code> 로직 상단에는 <code>@Transactional</code>이 선언되어 있었습니다.<br>
+              하지만 이는 <strong>데드 코드(Dead Code)</strong>였습니다.
+            </p>
+            
+            <div class="code-terminal" style="margin-bottom: 15px;">
+              <div class="code-header" style="background: #eef2ff; color: var(--accent-deepdive);">
+                TicketEventServiceImpl.java
+              </div>
+              <div class="code-body">
+<span style="color: #64748b;">// 개발자는 이 로직이 에러 시 전체 롤백될 것이라 착각함 (AOP 프록시 생성 X)</span>
+<span style="background: rgba(220,38,38,0.1); border-left: 3px solid var(--accent-danger); padding: 2px 10px;">@Transactional(rollbackFor = Exception.class)</span>
+public void selectApplyTicketEventOrder(...) throws Exception { 
+    <span style="color: #64748b;">// 사은품 지급 루프 (insertApplyTicketEventGift) 실행 부분</span>
+}</div>
+            </div>
+
+            <p class="slide-desc" style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 0;">
+              어노테이션이 작동하려면 설정 파일에 <code>&lt;tx:annotation-driven&gt;</code>이 존재해야 하지만 시스템엔 누락되어 있습니다.<br>
+              대신, 
+              <span onmouseover="document.getElementById('xml-code').style.opacity='1'; document.getElementById('xml-code').style.pointerEvents='auto';" 
+                    onmouseout="document.getElementById('xml-code').style.opacity='0'; document.getElementById('xml-code').style.pointerEvents='none';" 
+                    style="font-weight: 600; color: var(--accent-deepdive); border-bottom: 2px dashed var(--accent-deepdive); cursor: pointer; transition: all 0.2s; position: relative; z-index: 11;">
+                구형 방식인 XML AOP 설정에 의해 강제로 트랜잭션이 묶여 있는 상태입니다.
+              </span>
+            </p>
+
+            <!-- Hover overlay -->
+            <div id="xml-code" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.96); backdrop-filter: blur(4px); z-index: 10; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; display: flex; flex-direction: column; justify-content: center; padding: 40px; box-sizing: border-box;">
+              <div class="code-terminal" style="box-shadow: 0 15px 35px rgba(0,0,0,0.1);">
+                <div class="code-header"><i class="fa-solid fa-file-code"></i> context-transaction.xml</div>
+                <div class="code-body" style="padding: 20px; font-size: 0.95rem; line-height: 1.6;">
+&lt;aop:config&gt;
+  &lt;aop:pointcut id="requiredTx" 
+      <span style="background: rgba(79, 70, 229, 0.1); border-left: 3px solid var(--accent-deepdive); padding: 2px 10px;">expression="execution(* com.cware..service.impl.*ServiceImpl.*Tx(..))"</span> /&gt;
+  &lt;aop:advisor advice-ref="txAdvice" pointcut-ref="requiredTx" /&gt;
+&lt;/aop:config&gt;</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 7: XML TRAP -->
+      <section>
+        <div class="slide-container">
+          <div class="tech-panel deepdive">
+            <div class="slide-subtitle deepdive"><i class="fa-solid fa-file-code"></i> Deep Dive 02</div>
+            <h1 class="slide-title">구형 아키텍처(XML)의 한계와 비효율</h1>
+            <p class="slide-desc">
+              즉, 현재 시스템은 <strong>이름이 "Tx"로 끝나는 메서드만 무조건 트랜잭션을 거는 구형 XML 방식</strong>을 사용 중입니다.<br>
+              이로 인해 불필요한 단일 쿼리에도 트랜잭션이 발동하는 낭비가 발생하고 있습니다.
+            </p>
+            <div class="grid-2">
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 25px; border-radius: 12px;">
+                <h3 style="color: var(--accent-secondary); font-size: 1.15rem; margin-bottom: 10px; font-weight: 700;"><i class="fa-solid fa-ban"></i> 무의미한 원자성</h3>
+                <p style="font-size: 0.95rem; color: var(--text-muted); margin: 0; line-height: 1.6;">
+                  단일 <code>INSERT</code> 쿼리는 DB의 Auto-Commit으로 스스로 원자성이 보장되므로 스프링 트랜잭션이 무의미합니다.
+                </p>
+              </div>
+              <div style="background: #fff7ed; border: 1px solid #fed7aa; padding: 25px; border-radius: 12px;">
+                <h3 style="color: var(--accent-warning); font-size: 1.15rem; margin-bottom: 10px; font-weight: 700;"><i class="fa-solid fa-arrow-right-arrow-left"></i> 3배의 통신 오버헤드</h3>
+                <p style="font-size: 0.95rem; color: #9a3412; margin: 0; line-height: 1.6;">
+                  <code>~Tx</code> 규칙 때문에 쿼리 1회 실행을 위해 <code>SET autocommit=0</code>과 <code>COMMIT</code> 통신이 추가되어 Round-trip이 3배로 증가합니다.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 8: TOSS INTERFACE (NEW) -->
+      <section>
+        <div class="slide-container">
+          <div class="tech-panel deepdive">
+            <div class="slide-subtitle deepdive"><i class="fa-solid fa-plug-circle-exclamation"></i> Deep Dive 03</div>
+            <h1 class="slide-title">외부 연동과 트랜잭션의 잘못된 만남</h1>
+            <p class="slide-desc" style="margin-bottom: 15px;">
+              추가 전수 검사 결과, 내부 데이터 정합성 문제와는 별개로<br>
+              <strong>외부 결제(PG) 연동 인터페이스</strong>에도 <code>@Transactional</code>이 선언되어 있는 것을 확인했습니다.
+            </p>
+            
+            <div class="code-terminal" style="margin-bottom: 15px;">
+              <div class="code-header" style="background: #eef2ff; color: var(--accent-deepdive);">
+                TossInterface.java (Line 97)
+              </div>
+              <div class="code-body">
+<span style="background: rgba(220,38,38,0.1); border-left: 3px solid var(--accent-danger); padding: 2px 10px;">@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)</span>
+public PTossResultVO cardApproval(ParamMap paramMap) throws Exception { 
+    <span style="color: #64748b;">// PG사 API 호출 등 외부 네트워크 I/O 발생 지점</span>
+}</div>
+            </div>
+            <p class="slide-desc" style="font-size: 0.95rem; color: var(--text-main); font-weight: 600; margin-bottom: 0;">
+              만약 이 어노테이션이 실제로 작동했다면,<br>
+              외부 API 대기 시간과 맞물려 시스템 인프라 전반에 걸친 심각한 병목 현상을 유발했을 것입니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 9: THE PARADOX -->
+      <section>
+        <div class="slide-container">
+          <div class="tech-panel deepdive">
+            <div class="slide-subtitle deepdive"><i class="fa-solid fa-arrows-spin"></i> Deep Dive 04</div>
+            <h1 class="slide-title">데드 코드가 만들어낸 '역설적인 안전'</h1>
+            <p class="slide-desc">
+              아이러니하게도 방금 본 PG 결제 로직의 <code>@Transactional</code> 조차 설정 누락으로 인한 <strong>데드 코드</strong>였기 때문에,<br>
+              우리는 <strong>커넥션 풀 고갈이라는 시스템 다운 장애</strong>를 피할 수 있었습니다.
+            </p>
+            
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin-top: 20px;">
+              <h3 style="color: var(--accent-secondary); font-size: 1.05rem; margin-bottom: 15px; font-weight: 700;"><i class="fa-solid fa-circle-exclamation" style="color: var(--accent-warning);"></i> 만약 외부 결제 통신에 트랜잭션이 진짜로 작동했다면?</h3>
+              <ul style="padding-left: 20px; line-height: 1.8; color: var(--text-main); font-size: 1rem;">
+                <li>트랜잭션이 시작되며 즉시 DB 커넥션 획득</li>
+                <li style="color: var(--accent-danger); font-weight: 600;">외부 결제 통신망 대기(3~5초) 내내 커넥션을 놓지 않고 점유</li>
+                <li>피크 타임에 수십 건만 몰려도 DB 커넥션 풀 100% 점유 (Starvation)</li>
+                <li>결제와 무관한 단순 화면 조회 요청조차 응답 불가 (서버 Hang)</li>
+              </ul>
+            </div>
+            <p style="text-align: right; margin-top: 15px; font-size: 0.9rem; color: var(--text-muted);">
+              * 결과적으로 데이터 정합성은 깨졌지만, 시스템 셧다운은 면한 기이한 상태가 유지된 것입니다.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 10: THE FIX -->
+      <section>
+        <div class="slide-container">
+          <div class="tech-panel">
+            <div class="slide-subtitle"><i class="fa-solid fa-hammer"></i> Solution</div>
+            <h1 class="slide-title">트랜잭션과 외부 통신의 완벽한 분리</h1>
+            <p class="slide-desc">
+              이 거대한 안전망을 구축하고 커넥션 풀을 보호하기 위한 아키텍처 개편안입니다.<br>
+              외부 네트워크 통신(PG사 결제)과 내부 데이터베이스 작업을 <strong>철저하게 분리(Facade Pattern)</strong>해야 합니다.
+            </p>
+            <div class="code-terminal" style="margin-top: 20px;">
+              <div class="code-header"><i class="fa-solid fa-code"></i> 앞으로의 결제 처리 구조</div>
+              <div class="code-body">
+<span style="color: #64748b;">// 1. [트랜잭션 밖] PG사 외부 통신부터 안전하게 완료 (DB 점유 없음)</span>
+TossResult result = tossInterface.cardApproval(request); 
+
+<span style="color: #64748b;">// 2. [트랜잭션 안] 통신이 성공했을 때만! 관련 DB 작업을 하나의 흐름으로 강하게 묶음</span>
+if(result.isSuccess()) {
+    <span style="background: rgba(37,99,235,0.1); border-left: 3px solid var(--accent-primary); padding: 2px 10px;">orderService.processOrderCompleteTx(order, stock, log);</span>
+}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 11: ACTION ITEMS -->
+      <section>
+        <div class="slide-container">
+          <div class="tech-panel">
+            <div class="slide-subtitle"><i class="fa-solid fa-list-check"></i> Conclusion</div>
+            <h1 class="slide-title">앞으로 수정해 나갈 과제 (Phase 1~3)</h1>
+            <div style="display: flex; flex-direction: column; gap: 20px; margin-top: 30px;">
+              
+              <div style="display: flex; gap: 20px; align-items: flex-start;">
+                <div style="background: #eff6ff; color: var(--accent-primary); min-width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">1</div>
+                <div>
+                  <h3 style="font-size: 1.15rem; color: var(--accent-secondary); margin-bottom: 5px; font-weight: 700;">[즉시] 외부 통신 분리 및 통합 트랜잭션 묶기</h3>
+                  <p style="font-size: 1rem; color: var(--text-muted); margin: 0; line-height: 1.5;">기존의 <code>~Tx</code> 명명 규칙을 그대로 활용하여 당장 급한 불을 끕니다.<br>PG사 결제 등 외부 I/O는 트랜잭션 밖으로 빼내고, 연관된 DB 로직들을 하나의 <code>Tx</code> 메서드에 묶어 데이터 파편화를 막습니다.</p>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 20px; align-items: flex-start;">
+                <div style="background: #eff6ff; color: var(--accent-primary); min-width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">2</div>
+                <div>
+                  <h3 style="font-size: 1.15rem; color: var(--accent-secondary); margin-bottom: 5px; font-weight: 700;">[단기] 어노테이션 인프라 활성화 및 데드 코드 정비</h3>
+                  <p style="font-size: 1rem; color: var(--text-muted); margin: 0; line-height: 1.5;"><code>&lt;tx:annotation-driven&gt;</code>을 도입하여 올바른 트랜잭션 기반을 마련합니다.<br>동시에 기존의 가짜 <code>@Transactional</code> 데드 코드를 걷어내고, 꼭 필요한 위치에만 어노테이션을 올바르게 재배치합니다.</p>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 20px; align-items: flex-start;">
+                <div style="background: #eff6ff; color: var(--accent-primary); min-width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">3</div>
+                <div>
+                  <h3 style="font-size: 1.15rem; color: var(--accent-secondary); margin-bottom: 5px; font-weight: 700;">[장기] 구형 XML 매핑 체계 완전 제거</h3>
+                  <p style="font-size: 1rem; color: var(--text-muted); margin: 0; line-height: 1.5;">메서드 이름 규칙(<code>~Tx</code>)에 의존해 단일 쿼리 통신 비용을 낭비하는 낡은 XML AOP 설정을 완전히 걷어내고,<br>순수 어노테이션 기반의 명시적 트랜잭션 체계로 100% 전환합니다.</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+  <script>
+    Reveal.initialize({
+      controls: true,
+      progress: true,
+      center: true,
+      hash: true,
+      transition: 'slide',
+      transitionSpeed: 'fast'
+    });
+  </script>
+</body>
+</html>
