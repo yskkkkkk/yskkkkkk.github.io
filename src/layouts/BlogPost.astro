@@ -63,7 +63,13 @@ if (series) {
 }
 
 const seriesSlug = series ? toSeriesSlug(series) : '';
-const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
+const hasH2 = headings.some(h => h.depth === 2);
+const tocHeadings = headings.filter(h => {
+  if (hasH2) {
+    return h.depth === 2;
+  }
+  return h.depth === 3;
+});
 ---
 
 <BaseLayout
