@@ -99,9 +99,42 @@
       background: #fff5f5; border: 1px solid #fecaca; border-radius: 12px; padding: 25px;
       text-align: center; box-shadow: 0 4px 6px -1px rgba(220,38,38,0.05);
     }
+    #fullscreen-btn:hover {
+      background: rgba(255, 255, 255, 1) !important;
+      border-color: #94a3b8 !important;
+      color: #0f172a !important;
+      transform: scale(1.08);
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.15);
+    }
   </style>
 </head>
 <body>
+
+  <!-- Floating Action Button for Fullscreen Toggle (Light Theme Style) -->
+  <button id="fullscreen-btn" style="
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 999;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid #cbd5e1;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #334155;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  " title="전체 화면 보기 (F)">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+      <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+    </svg>
+  </button>
 
   <div class="reveal">
     <div class="slides">
@@ -462,6 +495,58 @@ if(result.isSuccess()) {
       transition: 'slide',
       transitionSpeed: 'fast'
     });
+
+    // Fullscreen Toggle Button Logic
+    const fsBtn = document.getElementById('fullscreen-btn');
+    fsBtn.addEventListener('click', () => {
+      const doc = document.documentElement;
+      const requestFullScreen = doc.requestFullscreen || doc.webkitRequestFullscreen || doc.mozRequestFullScreen || doc.msRequestFullscreen;
+      const exitFullScreen = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+      const fullScreenElement = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+
+      if (!fullScreenElement) {
+        if (requestFullScreen) {
+          try {
+            const promise = requestFullScreen.call(doc);
+            if (promise) {
+              promise.catch(err => console.error(`Error attempting to enable full-screen mode: ${err.message}`));
+            }
+          } catch (err) {
+            console.error('Fullscreen API error:', err);
+          }
+        } else {
+          alert('현재 사용 중인 모바일 브라우저(ex. iOS Safari)에서는 전체 화면 기능을 지원하지 않습니다.');
+        }
+      } else {
+        if (exitFullScreen) {
+          exitFullScreen.call(document);
+        }
+      }
+    });
+
+    const handleFsChange = () => {
+      const fullScreenElement = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+      if (fullScreenElement) {
+        fsBtn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M4 14h6v6m10-6h-6v6M4 10h6V4m10 6h-6V4"/>
+          </svg>
+        `;
+        fsBtn.title = "전체 화면 종료 (ESC)";
+      } else {
+        fsBtn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+          </svg>
+        `;
+        fsBtn.title = "전체 화면 보기 (F)";
+      }
+    };
+
+    document.addEventListener('fullscreenchange', handleFsChange);
+    document.addEventListener('webkitfullscreenchange', handleFsChange);
+    document.addEventListener('mozfullscreenchange', handleFsChange);
+    document.addEventListener('MSFullscreenChange', handleFsChange);
   </script>
 </body>
 </html>
