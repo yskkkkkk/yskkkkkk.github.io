@@ -93,44 +93,10 @@ heroImage: ""
 
 ---
 
-### 해결책과 점진적 리팩토링 로드맵
-
-이 문제를 해결하기 위해서는 외부 결제 통신과 내부 DB 작업을 철저히 쪼개야 합니다.
-
-이를 위해 Facade 패턴을 도입하여 구조를 개편하기로 했습니다.
-
-```java
-// 1. [트랜잭션 밖] DB 점유 없이 PG사 외부 통신 완료
-TossResult result = tossInterface.cardApproval(request); 
-
-// 2. [트랜잭션 안] 결제 통신이 성공한 경우에만 내부 DB 로직을 단일 트랜잭션으로 묶음
-if (result.isSuccess()) {
-    orderService.processOrderCompleteTx(order, stock, log);
-}
-```
-
-한 번에 모든 걸 뜯어고치다간 또 다른 사이드 이펙트가 발생할 수 있어, 다음과 같이 3단계 로드맵을 세워 점진적으로 마이그레이션할 계획입니다.
-
-- **Phase 1 (즉시):** 당장 시급한 외부 통신과 DB 트랜잭션을 분리하고, 기존 XML AOP 규칙(`~Tx` 명명)을 활용해 연관된 DB 로직들을 단일 흐름으로 묶어 급한 불을 끕니다.
-- **Phase 2 (단기):** `<tx:annotation-driven>` 설정을 활성화하여 안전망을 복원하고, 기존의 가짜 `@Transactional` 데드 코드를 전수 정비하여 필요한 곳에만 올바르게 배치합니다.
-- **Phase 3 (장기):** 이름 매핑(`~Tx`)에 의존해 커넥션을 무의미하게 소모하던 낡은 XML 설정을 완전히 걷어내고, 명시적인 어노테이션 기반 트랜잭션으로 100% 전환합니다.
-
----
-
 의외의 곳에서 과외 공부 효과를 톡톡히 보고 있네요.
 
 이번 트랜잭션 회고 내용은 잘 정리해서 다가올 6월 팀 회고 때 공유할 생각입니다.
 
 이후에는 또 어떤 잠재 버그들이 발각될지 벌써부터 기대 반 두려움 반입니다...
 
-아래 슬라이드는 6월 팀 회고 발표를 위해 작성해 본 HTML 프레젠테이션 자료입니다. 슬라이드를 넘기며 자세한 내용과 시각적 다이어그램을 확인해 보실 수 있습니다.
-
-### 프레젠테이션 슬라이드 (직접 넘겨보세요!)
-
-<iframe 
-  src="/presentations/retrospective-202606/index.html" 
-  width="100%" 
-  height="600px" 
-  style="border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"
-  allowfullscreen>
-</iframe>
+ps. 발표 자료 정리 도중 [잠재버그는 하루만에 한개 더 나와버리는데...](/blog/spring-transaction-double-connection-holding)
