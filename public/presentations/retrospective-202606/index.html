@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>안전한 결제 시스템을 위한 아키텍처 개편 - 6월 회고</title>
+  <title>트랜잭션과 데이터 정합성 전수 조사 보고 - 6월 회고</title>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/dynamic/pretendard-dynamic-subset.css" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
@@ -33,7 +34,7 @@
     }
 
     body {
-      font-family: 'Inter', sans-serif !important;
+      font-family: 'Pretendard', sans-serif !important;
       background-color: var(--bg-body) !important;
       color: var(--text-main) !important;
       overflow: hidden;
@@ -71,7 +72,7 @@
 
     /* Typography */
     h1.slide-title {
-      font-family: 'Inter', sans-serif !important; font-size: 2.5rem !important;
+      font-family: 'Pretendard', sans-serif !important; font-size: 2.5rem !important;
       font-weight: 800 !important; line-height: 1.3 !important; margin-bottom: 24px !important;
       color: var(--accent-secondary) !important; letter-spacing: -1px;
     }
@@ -151,11 +152,11 @@
             <div class="slide-subtitle" style="justify-content: center; color: var(--text-muted);">
               TECH RETROSPECTIVE 2026.06
             </div>
-            <h1 class="slide-title" style="font-size: 3.2rem !important; margin-top: 10px; color: var(--accent-secondary) !important;">
-              안전한 결제 시스템을 위한<br>아키텍처 개편
+            <h1 class="slide-title" style="font-size: 2.7rem !important; margin-top: 10px; color: var(--accent-secondary) !important;">
+              트랜잭션과 데이터 정합성 전수 조사 보고
             </h1>
             <h3 style="font-weight: 400; color: var(--text-muted); font-size: 1.4rem; margin-bottom: 40px;">
-              데이터 정합성 확보와 시스템 안정성을 향하여
+              데이터 정합성 확보와 시스템 안정성
             </h3>
             <div style="display: inline-block; padding: 10px 28px; border-radius: 30px; background: #f1f5f9; border: 1px solid #e2e8f0;">
               <span style="color: var(--accent-secondary); font-weight: 700;">Presenter:</span> yskkkkkk
@@ -313,15 +314,14 @@ public void applyPromotionEventOrder(...) throws Exception {
             <p class="slide-desc" style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 0;">
               어노테이션이 작동하려면 설정 파일에 <code>&lt;tx:annotation-driven&gt;</code>이 존재해야 하지만 시스템엔 누락되어 있습니다.<br>
               대신, 
-              <span onmouseover="document.getElementById('xml-code').style.opacity='1'; document.getElementById('xml-code').style.pointerEvents='auto';" 
-                    onmouseout="document.getElementById('xml-code').style.opacity='0'; document.getElementById('xml-code').style.pointerEvents='none';" 
+              <span onclick="toggleXmlCode(event)"
                     style="font-weight: 600; color: var(--accent-deepdive); border-bottom: 2px dashed var(--accent-deepdive); cursor: pointer; transition: all 0.2s; position: relative; z-index: 11;">
-                구형 방식인 XML AOP 설정에 의해 강제로 트랜잭션이 묶여 있는 상태입니다.
-              </span>
+                구형 방식인 XML AOP 설정에 의해 강제로 트랜잭션이 묶여 있는 상태입니다.</span><span onclick="toggleXmlCode(event)" style="margin-left: 7px; font-size: 0.75em; background: rgba(79,70,229,0.1); border: 1px solid rgba(79,70,229,0.35); border-radius: 4px; padding: 2px 8px; color: var(--accent-deepdive); cursor: pointer; font-weight: 700; white-space: nowrap; vertical-align: middle;"><i class="fa-solid fa-code"></i> 코드 보기</span>
             </p>
 
-            <!-- Hover overlay -->
-            <div id="xml-code" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.96); backdrop-filter: blur(4px); z-index: 10; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; display: flex; flex-direction: column; justify-content: center; padding: 40px; box-sizing: border-box;">
+            <!-- Click overlay -->
+            <div id="xml-code" onclick="toggleXmlCode(event)" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.96); backdrop-filter: blur(4px); z-index: 10; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; display: flex; flex-direction: column; justify-content: center; padding: 40px; box-sizing: border-box; cursor: pointer;">
+              <p style="text-align: right; font-size: 0.8rem; color: var(--text-muted); margin: 0 0 10px 0;">클릭하여 닫기 ×</p>
               <div class="code-terminal" style="box-shadow: 0 15px 35px rgba(0,0,0,0.1);">
                 <div class="code-header"><i class="fa-solid fa-file-code"></i> context-transaction.xml</div>
                 <div class="code-body" style="padding: 20px; font-size: 0.95rem; line-height: 1.6;">
@@ -362,7 +362,7 @@ public void applyPromotionEventOrder(...) throws Exception {
                 <div>
                   <h3 style="color: var(--accent-warning); font-size: 1.1rem; margin-bottom: 8px; font-weight: 700;"><i class="fa-solid fa-database"></i> 불필요한 조회(SELECT)</h3>
                   <p style="font-size: 0.82rem; color: #9a3412; margin: 0; line-height: 1.5; word-break: keep-all;">
-                    데이터 변경이 없는 단순 조회(SELECT)임에도 트랜잭션 세션이 생성되어 불필요한 언두 로그 관리 등이 작동하고, 커넥션 점유 시간이 길어져 리소스가 낭비됩니다.
+                    데이터 변경이 없는 단순 조회(SELECT)임에도 트랜잭션 세션이 생성되어 불필요한 트랜잭션 세션 오버헤드 및 커넥션 점유 시간이 증가하여 리소스가 낭비됩니다.
                   </p>
                 </div>
               </div>
@@ -473,7 +473,7 @@ if(result.isSuccess()) {
               [추가 보고] 기능 정합성 검토 외에, 추가 전수 조사 중 포착한 인프라 리소스 누수 현상입니다.
             </p>
             <p class="slide-desc" style="font-size: 0.95rem; margin-bottom: 15px; line-height: 1.5;">
-              아래의 <strong>단계별 카드(탭)를 클릭</strong>하시면, 실제로 작동하고 있던 설정 및 소스코드를 확인하실 수 있습니다.
+              <i class="fa-solid fa-hand-pointer" style="margin-right: 5px; color: var(--accent-deepdive);"></i>아래의 단계별 카드(탭)를 <strong>클릭</strong>하시면, 실제로 작동하고 있던 설정 및 소스코드를 확인하실 수 있습니다.
             </p>
 
             <!-- Interactive Step Cards -->
@@ -746,7 +746,10 @@ if(result.isSuccess()) {
           background: #ffffff !important;
         }
         .step-card:hover {
-          opacity: 0.9 !important;
+          opacity: 1 !important;
+          background: #eef2ff !important;
+          border-color: rgba(79, 70, 229, 0.3) !important;
+          transform: translateY(-1px);
         }
       </style>
 
@@ -791,6 +794,14 @@ cdcDbsource=jdbc/maincdc`
 </aop:config>`
           }
         };
+
+        function toggleXmlCode(event) {
+          event.stopPropagation();
+          const overlay = document.getElementById('xml-code');
+          const isVisible = overlay.style.opacity === '1';
+          overlay.style.opacity = isVisible ? '0' : '1';
+          overlay.style.pointerEvents = isVisible ? 'none' : 'auto';
+        }
 
         function switchCodeStep(event, stepNum) {
           if (event) {
