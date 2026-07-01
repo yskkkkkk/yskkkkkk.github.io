@@ -16,6 +16,19 @@ export function formatDate(date: Date): string {
   });
 }
 
+export function formatShortDate(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}.${m}.${d}`;
+}
+
+export function formatYearMonth(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  return `${y}.${m}`;
+}
+
 export const SERIES_META: Record<string, { slug: string; description: string; heroBg: string }> = {
   '피카밈 개발기': {
     slug: 'pika-a-meme',

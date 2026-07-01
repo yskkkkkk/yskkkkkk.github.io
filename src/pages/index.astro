@@ -2,13 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { SITE_DESCRIPTION } from '../consts';
-import { seriesSlug, formatDate, readingTime, SERIES_META } from '../lib/utils';
-
-const formatYearMonth = (date: Date) => {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  return `${y}.${m}`;
-};
+import { seriesSlug, formatDate, formatYearMonth, readingTime, SERIES_META } from '../lib/utils';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft && !data.externalUrl);
 const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());

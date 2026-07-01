@@ -1,15 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import { SERIES_META } from '../../lib/utils';
+import { SERIES_META, formatYearMonth } from '../../lib/utils';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft && !!data.series);
-
-const formatYearMonth = (date: Date) => {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  return `${y}.${m}`;
-};
 
 // Build stats per series name (count + date range)
 const statsMap = new Map<string, { count: number; minDate: Date; maxDate: Date }>();

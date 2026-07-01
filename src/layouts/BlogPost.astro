@@ -1,7 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import { seriesSlug as toSeriesSlug } from '../lib/utils';
+import { seriesSlug as toSeriesSlug, formatShortDate, readingTime } from '../lib/utils';
 
 interface Props {
   title: string;
@@ -27,26 +27,12 @@ const {
   series
 } = Astro.props;
 
-// Format date helper
-const formatDate = (date: Date) => {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}.${m}.${d}`;
-};
-
 // Fetch specific post body to estimate reading time
 const allPosts = await getCollection('blog');
 const currentPost = allPosts.find(p => p.slug === slug);
 const postBody = currentPost?.body || '';
 
-const calculateReadingTime = (body: string) => {
-  const cleanText = body.trim().replace(/[#*`_\[\]()\-]/g, '');
-  const words = cleanText.split(/\s+/).length;
-  return Math.ceil(words / 180) || 3;
-};
-
-const readingTime = calculateReadingTime(postBody);
+const postReadingTime = readingTime(postBody);
 
 // Retrieve posts in same series
 let seriesPosts: { title: string; slug: string; order: number; externalUrl?: string }[] = [];
@@ -100,8 +86,8 @@ const tocHeadings = headings.filter(h => {
         <header>
           <h1 class="post-headline">{title}</h1>
           <div class="post-meta">
-            <span class="meta-date">{formatDate(pubDate)}</span>
-            <span class="meta-read">{readingTime}분 읽기</span>
+            <span class="meta-date">{formatShortDate(pubDate)}</span>
+            <span class="meta-read">{postReadingTime}분 읽기</span>
             {series && (
               <a href={`/series/${seriesSlug}`} class="meta-series-btn">{series}</a>
             )}
