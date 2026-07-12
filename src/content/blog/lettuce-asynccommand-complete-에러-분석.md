@@ -56,7 +56,7 @@ return asyncStringConn.async()
 
 #### 1) `RedisFuture` 직접 사용 + IO 풀에서 블로킹 회수
 
-Java 8 환경이라 `orTimeout`/`completeOnTimeout`을 쓰지 않고, **I/O 전용 스레드풀**에서 `get(timeout)`으로 회수한다.
+`orTimeout`/`completeOnTimeout` 대신, **I/O 전용 스레드풀**에서 `get(timeout)`으로 명시적으로 회수하는 방식을 택했다. 라이브러리 내부의 완료·취소 시그널과 얽히지 않고, 타임아웃 처리를 호출부 한 곳에서 통제하기 위해서다.
 
 ```java
 private final ExecutorService ioExecutor = Executors.newFixedThreadPool(16, r -> {
