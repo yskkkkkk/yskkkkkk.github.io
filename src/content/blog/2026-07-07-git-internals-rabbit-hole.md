@@ -136,7 +136,7 @@ git branch feature
 
 ```
 A---B---C   (main)
-     \
+     \\
       E---F   (feature)
 ```
 
