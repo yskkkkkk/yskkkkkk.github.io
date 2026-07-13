@@ -165,7 +165,7 @@ B와 F를 비교 → feature가 뭘 바꿨는지
 
 ```
 A---B---C---M   (main)
-     \     /
+     \\     /
       E---F
 M의 parent = [C, F]
 ```
@@ -216,7 +216,7 @@ Merge가 '두 최종 상태를 비교해 합치는 것'이라면, rebase는 접�
 
 ```
 A---B---C   (main)
-     \
+     \\
       E---F   (feature)
 ```
 
