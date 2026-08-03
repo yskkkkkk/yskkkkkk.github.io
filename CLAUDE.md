@@ -10,22 +10,41 @@
 
 ## 중복 렌더링 주의사항
 
-### 시리즈 카드 커버 디자인
+### 홈과 `/series`의 시리즈 UI는 서로 다릅니다
 
-시리즈 커버 UI(`series-cover` 내부 HTML)는 **두 파일에 동시 존재**합니다:
+두 페이지가 같은 데이터(`SERIES_META` + 포스트 통계)를 쓰지만 **UI 구현은 완전히 다릅니다.**
 
-| 파일 | 역할 |
+| 파일 | UI |
 |---|---|
-| `src/pages/index.astro` | 메인 홈페이지의 아티클 시리즈 섹션 |
-| `src/pages/series/index.astro` | `/series` 전용 목록 페이지 |
+| `src/pages/index.astro` | 컴팩트 시리즈 칩 (`series-chip-item`) — 이름 + 편수만, 최신 3개 |
+| `src/pages/series/index.astro` | 시리즈 카드 커버 (`series-cover`) — 시리즈별 커스텀 인라인 디자인 |
 
-커버 디자인을 수정할 때는 **반드시 두 파일 모두** 동일하게 업데이트해야 합니다.
-한 파일만 고치면 홈과 시리즈 페이지의 UI가 달라집니다.
+커버 디자인(`series-cover` 내부 HTML)은 **`src/pages/series/index.astro`에만 존재**합니다.
+홈에는 커버가 없으니 커버를 수정할 때 홈을 같이 건드릴 필요가 없습니다.
+
+단, `src/pages/series/[slug].astro`의 히어로 배너에도 시리즈별 커스텀 디자인이 있습니다.
+시리즈를 추가·변경할 때는 **`series/index.astro`(카드 커버)와 `series/[slug].astro`(히어로)** 두 곳을 함께 확인해야 합니다.
 
 ### 시리즈 메타 데이터 단일 소스
 
 시리즈 배경색(`heroBg`), slug, 설명은 **`src/lib/utils.ts`의 `SERIES_META`** 가 유일한 정의 위치입니다.
 새 시리즈를 추가하거나 기존 시리즈 정보를 바꿀 때는 이 파일만 수정하면 됩니다.
+
+### 날짜·읽기시간 헬퍼는 반드시 `utils.ts`에서 import
+
+날짜 포맷과 읽기 시간 계산은 **`src/lib/utils.ts`에만 정의**합니다.
+페이지·레이아웃에서 지역 함수로 다시 정의하지 않습니다.
+
+| 함수 | 출력 |
+|---|---|
+| `formatDate(date)` | `2026년 7월 28일` (ko-KR 긴 형식) |
+| `formatShortDate(date)` | `2026.07.28` |
+| `formatYearMonth(date)` | `2026.07` |
+| `readingTime(body)` | 분 단위 정수 (마크다운 문법 제거 후 200단어/분) |
+
+> 과거에 `formatDate`·`calculateReadingTime`이 4개 파일에 각각 정의되어 있었고,
+> 읽기 시간 알고리즘이 파일마다 달라(180 vs 200단어/분) **같은 글이 페이지마다 다른 분 수로 표시되는 버그**가 있었습니다.
+> 지역 재정의를 추가하면 이 문제가 재발합니다.
 
 ---
 

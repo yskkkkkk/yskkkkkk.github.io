@@ -12,15 +12,19 @@
 - [x] 블로그 목록 페이지 series 별 그룹핑 UI 추가
 - [x] 다크/라이트 테마 토글 추가
 - [x] Notion 링크 연결
+- [x] pet-pass 블로그 연결 (externalUrl 스텁 9편)
+- [x] pick-a-me 블로그 연결 (externalUrl 스텁 13편)
+  - 완전 이식 대신 스텁 방식 채택 — 시리즈에는 노출되고 클릭 시 외부 원문으로 이동
+  - 필터링 규칙은 [`CLAUDE.md`](./CLAUDE.md) 참고
+- [x] 소셜 메타태그 설정 (`BaseHead.astro`의 og/twitter 태그, `og-default.png` 폴백)
+- [x] 검색엔진 등록 (Google Search Console, 네이버 서치어드바이저)
 
 ## TODO
 - [ ] 이미지 273개 로컬 이전 (Blogger 삭제 전에 처리)
   - 이미지 포함 파일 23개에 `<!-- TODO: migrate images -->` 주석 있음
-- [ ] pet-pass 블로그 이전
-- [ ] pick-a-me 블로그 이전
 - [ ] Blogger 포스트 tags 정리 (현재 Blogger 카테고리 그대로 유입됨, 중복/불일치 정리 필요)
-- [ ] 루트의 `convert_blogger.py` 및 `src/feed.atom` 삭제 (이관 완료 후 불필요)
-- [ ] OG 이미지 / 소셜 메타태그 설정 (현재 58/59 포스트 완료, 1개 미설정)
+- [ ] 루트의 `convert_blogger.py`(13KB) 및 `src/feed.atom`(672KB) 삭제 (이관 완료 후 불필요)
+- [ ] 포스트별 `heroImage` 지정 검토 (현재 대부분 빈 값 → `og-default.png`로 폴백 중)
 
 ---
 
