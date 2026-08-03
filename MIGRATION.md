@@ -23,7 +23,7 @@
 - [ ] 이미지 273개 로컬 이전 (Blogger 삭제 전에 처리)
   - 이미지 포함 파일 23개에 `<!-- TODO: migrate images -->` 주석 있음
 - [ ] Blogger 포스트 tags 정리 (현재 Blogger 카테고리 그대로 유입됨, 중복/불일치 정리 필요)
-- [ ] 루트의 `convert_blogger.py` 및 `src/feed.atom` 삭제 (이관 완료 후 불필요)
+- [ ] 루트의 `convert_blogger.py`(13KB) 및 `src/feed.atom`(672KB) 삭제 (이관 완료 후 불필요)
 - [ ] 포스트별 `heroImage` 지정 검토 (현재 대부분 빈 값 → `og-default.png`로 폴백 중)
 
 ---
