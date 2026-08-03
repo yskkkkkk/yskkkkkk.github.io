@@ -10,17 +10,20 @@
 
 ## 중복 렌더링 주의사항
 
-### 시리즈 카드 커버 디자인
+### 홈과 `/series`의 시리즈 UI는 서로 다릅니다
 
-시리즈 커버 UI(`series-cover` 내부 HTML)는 **두 파일에 동시 존재**합니다:
+두 페이지가 같은 데이터(`SERIES_META` + 포스트 통계)를 쓰지만 **UI 구현은 완전히 다릅니다.**
 
-| 파일 | 역할 |
+| 파일 | UI |
 |---|---|
-| `src/pages/index.astro` | 메인 홈페이지의 아티클 시리즈 섹션 |
-| `src/pages/series/index.astro` | `/series` 전용 목록 페이지 |
+| `src/pages/index.astro` | 컴팩트 시리즈 칩 (`series-chip-item`) — 이름 + 편수만, 최신 3개 |
+| `src/pages/series/index.astro` | 시리즈 카드 커버 (`series-cover`) — 시리즈별 커스텀 인라인 디자인 |
 
-커버 디자인을 수정할 때는 **반드시 두 파일 모두** 동일하게 업데이트해야 합니다.
-한 파일만 고치면 홈과 시리즈 페이지의 UI가 달라집니다.
+커버 디자인(`series-cover` 내부 HTML)은 **`src/pages/series/index.astro`에만 존재**합니다.
+홈에는 커버가 없으니 커버를 수정할 때 홈을 같이 건드릴 필요가 없습니다.
+
+단, `src/pages/series/[slug].astro`의 히어로 배너에도 시리즈별 커스텀 디자인이 있습니다.
+시리즈를 추가·변경할 때는 **`series/index.astro`(카드 커버)와 `series/[slug].astro`(히어로)** 두 곳을 함께 확인해야 합니다.
 
 ### 시리즈 메타 데이터 단일 소스
 
