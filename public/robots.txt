@@ -2,3 +2,7 @@ User-agent: *
 Allow: /
 
 Sitemap: https://yskkkkkk.github.io/sitemap-index.xml
+
+# AI 도구용 텍스트 인덱스
+# https://yskkkkkk.github.io/llms.txt      — 전체 글 목록
+# https://yskkkkkk.github.io/llms-full.txt — 전체 글 본문
