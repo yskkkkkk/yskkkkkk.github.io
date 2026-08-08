@@ -33,7 +33,7 @@
 
 ### 1. Cloudflare R2 버킷 세팅 (유저 작업)
 - Cloudflare 대시보드에서 신규 R2 버킷 생성.
-- 외부 접근용 도메인 연결 (Custom Domain 권장) 및 퍼블릭 엑세스 활성화.
+- 외부 접근용 도메인 연결 (Custom Domain 권장) 및 퍼블릭 액세스 활성화.
 - API 통신을 위한 Access Key ID 및 Secret Access Key 발급.
 
 ### 2. 타사 호스팅 이미지 다운로드
