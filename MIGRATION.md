@@ -18,12 +18,12 @@
   - 필터링 규칙은 [`CLAUDE.md`](./CLAUDE.md) 참고
 - [x] 소셜 메타태그 설정 (`BaseHead.astro`의 og/twitter 태그, `og-default.png` 폴백)
 - [x] 검색엔진 등록 (Google Search Console, 네이버 서치어드바이저)
+- [x] 루트의 `convert_blogger.py`·`src/feed.atom` 삭제 (이관 완료 후 불필요, 어디서도 참조되지 않음 확인)
 
 ## TODO
 - [ ] 이미지 273개 로컬 이전 (Blogger 삭제 전에 처리)
   - 이미지 포함 파일 23개에 `<!-- TODO: migrate images -->` 주석 있음
 - [ ] Blogger 포스트 tags 정리 (현재 Blogger 카테고리 그대로 유입됨, 중복/불일치 정리 필요)
-- [ ] 루트의 `convert_blogger.py`(13KB) 및 `src/feed.atom`(672KB) 삭제 (이관 완료 후 불필요)
 - [ ] 포스트별 `heroImage` 지정 검토 (현재 대부분 빈 값 → `og-default.png`로 폴백 중)
 
 ---
