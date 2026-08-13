@@ -186,8 +186,19 @@ img {
   transform: translateX(16px);
   background: var(--accent);
 }
-.toggle-label {
-  font-size: 14px;
+.toggle-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text2);
+}
+.toggle-icon .icon-moon {
+  display: none;
+}
+[data-theme="dark"] .toggle-icon .icon-sun {
+  display: none;
+}
+[data-theme="dark"] .toggle-icon .icon-moon {
+  display: block;
 }
 
 /* ── Page Wrapper ── */
@@ -1598,8 +1609,8 @@ img {
     padding: 6px 8px;
     flex-shrink: 0;
   }
-  .theme-toggle .toggle-label {
-    display: none; /* Hide emoji on track to prevent overlapping issues */
+  .theme-toggle .toggle-icon {
+    display: none; /* Hide icon on track to prevent overlapping issues */
   }
   .nav-actions {
     gap: 8px;

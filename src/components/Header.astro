@@ -33,7 +33,15 @@ const isActive = (path: string) => {
         <span class="toggle-track">
           <span class="toggle-thumb" id="theme-toggle-thumb"></span>
         </span>
-        <span class="toggle-label" id="theme-toggle-label">🌙</span>
+        <span class="toggle-icon" aria-hidden="true">
+          <svg class="icon-sun" width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="3.4" stroke="currentColor" stroke-width="1.4"></circle>
+            <path d="M8 1.6V3.1M8 12.9V14.4M1.6 8H3.1M12.9 8H14.4M3.5 3.5L4.6 4.6M11.4 11.4L12.5 12.5M3.5 12.5L4.6 11.4M11.4 4.6L12.5 3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path>
+          </svg>
+          <svg class="icon-moon" width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <path d="M13.7 9.9A6 6 0 1 1 6.1 2.3a6.7 6.7 0 0 0 7.6 7.6Z" fill="currentColor"></path>
+          </svg>
+        </span>
       </button>
     </div>
   </div>
@@ -54,28 +62,16 @@ const isActive = (path: string) => {
     handleScroll(); // Run once on load
   }
 
-  // Theme toggle functionality
+  // Theme toggle functionality (icon visibility is driven by [data-theme] in CSS)
   const themeToggle = document.getElementById('theme-toggle');
-  const toggleLabel = document.getElementById('theme-toggle-label');
-  
+
   if (themeToggle) {
-    const updateToggleUI = (currentTheme) => {
-      if (toggleLabel) {
-        toggleLabel.textContent = currentTheme === 'light' ? '🌙' : '☀️';
-      }
-    };
-
-    // Initialize toggle button UI based on current theme in <html>
-    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-    updateToggleUI(currentTheme);
-
     themeToggle.addEventListener('click', () => {
       const activeTheme = document.documentElement.getAttribute('data-theme') || 'light';
       const nextTheme = activeTheme === 'light' ? 'dark' : 'light';
-      
+
       document.documentElement.setAttribute('data-theme', nextTheme);
       localStorage.setItem('theme', nextTheme);
-      updateToggleUI(nextTheme);
     });
   }
 
