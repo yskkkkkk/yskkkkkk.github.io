@@ -7,7 +7,7 @@ tags: ["redis", "cache", "java", "backend", "refactoring"]
 heroImage: ""
 ---
 
-### 🤦 문제 발생
+### 문제 발생
 
 Redis 키가 여기저기서 **다른 규칙**으로 만들어지고 있었다.
 
@@ -20,7 +20,7 @@ Redis 키가 여기저기서 **다른 규칙**으로 만들어지고 있었다.
 
 ---
 
-### 🔍 원인 파악
+### 원인 파악
 
 - 과거 코드에서 내려온 `mdulInfo_` 접두사와 언더스코어(`_`) 구분 규칙이 **새 코드로 넘어오며 일관성 없이** 쓰였다.
 - 일부 모듈은 `fastExpire` 같은 정책 플래그를 **키 포맷 합의 없이 임의로** 붙여서 파편화를 초래했다.
@@ -30,7 +30,7 @@ Redis 키가 여기저기서 **다른 규칙**으로 만들어지고 있었다.
 
 ---
 
-### ✅ 해결
+### 해결
 
 키 생성 시 **단일 진입점**을 강제하고, 다음 원칙을 합의했다.
 
@@ -65,11 +65,11 @@ List<String> redisKeyList = moduleList.stream()
 
 ---
 
-### 🧪 예/반례로 검증
+### 예/반례로 검증
 
 - 입력: `mdulInfo_home_main_01` → 출력: `home:main:01`
 - 입력: `mdulInfo_home_main_01` + fastExpire=Y → `home:main:01:Y`
-- ❌ 잘못된 예: `home:main:01Y`, `mdulInfo_home_main_01:Y` (접두사 잔존, 구분자 혼용)
+- 잘못된 예: `home:main:01Y`, `mdulInfo_home_main_01:Y` (접두사 잔존, 구분자 혼용)
 
 간단한 단위 테스트 스케치:
 
@@ -88,7 +88,7 @@ void normalizeKey_withFlag() {
 
 ---
 
-### 🎉 효과 / 깨달음
+### 효과 / 깨달음
 
 - **키 충돌·중복 저장 감소**, 운영 스캔/모니터링이 **한결 수월**해졌다.
 - 캐시 미스가 줄어들면서 **TTL 정책 실험**(fastExpire vs normal)도 투명해졌다.
