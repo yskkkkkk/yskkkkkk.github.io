@@ -7,7 +7,7 @@ tags: ["redis", "lettuce", "java", "concurrency", "backend", "debugging"]
 heroImage: ""
 ---
 
-### 🤦 문제 발생
+### 문제 발생
 
 몇 달간 잘 돌던 GNB 캐시 경로에서, 특정 날부터 간헐적으로 아래 지점에서 터졌다.
 
@@ -40,7 +40,7 @@ return asyncStringConn.async()
 
 ---
 
-### 🔍 원인 파악
+### 원인 파악
 
 - **이종 Future 브리지**: Lettuce의 `RedisFuture`를 `toCompletableFuture()`로 감싼 뒤, 추가로 `thenApply`/`join` 등이 섞이며 **완료 신호가 두 레이어에서 경합**하는 구간이 있었다.
 - **타임아웃과 재시도 간섭**: 간헐적으로 느려지는 시점에 상위 재시도/취소와 클라이언트 내부 완료 시그널이 맞물려 `complete()` 경로에서 중복 완료/취소가 충돌했을 가능성이 있다.
@@ -50,7 +50,7 @@ return asyncStringConn.async()
 
 ---
 
-### ✅ 해결
+### 해결
 
 핵심은 두 가지다. **(1) 브리지 제거**로 체인 단순화, **(2) 명시적 타임아웃/예외 처리**를 호출부에서 통일.
 
@@ -113,7 +113,7 @@ RedisFuture<List<String>> fut = asyncStringConn.async().mget(keys);
 
 ---
 
-### 🧪 검증
+### 검증
 
 - 동일 트래픽/동일 키 세트로 재현 테스트를 진행했다.
 - `AsyncCommand.complete()` 경로 예외가 **미발생**으로 확인됐다 (운영/스테이징 모두).
@@ -121,7 +121,7 @@ RedisFuture<List<String>> fut = asyncStringConn.async().mget(keys);
 
 ---
 
-### 🎉 효과 / 깨달음
+### 효과 / 깨달음
 
 - **이종 Future 브리지(`toCompletableFuture`)** 는 편하지만, 경합 구간에서 디버깅 포인트를 늘린다. 한 가지 모델만 쓰는 게 단순하고 안전하다.
 - 타임아웃/취소는 호출부에서 **명시적으로** 처리하는 편이 라이브러리 내부 완료·취소 시그널과 충돌하지 않는다.
