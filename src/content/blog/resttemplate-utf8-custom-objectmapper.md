@@ -7,7 +7,7 @@ tags: ["spring", "resttemplate", "java", "backend", "utf-8"]
 heroImage: ""
 ---
 
-### 🤦 문제 발생
+### 문제 발생
 
 Redis API와 통신하는 RestTemplate을 쓰는데,
 
@@ -18,7 +18,7 @@ Redis API와 통신하는 RestTemplate을 쓰는데,
 
 ---
 
-### 🔍 원인 파악
+### 원인 파악
 
 - 기본 RestTemplate의 `StringHttpMessageConverter`는 **ISO-8859-1**을 사용한다. (한글 깨짐 원인)
 - 직접 등록한 Custom ObjectMapper는 기본 RestTemplate에 전혀 반영되지 않는다.
@@ -27,7 +27,7 @@ Spring이 제공하는 **기본 RestTemplate은 내 설정대로 동작하지 �
 
 ---
 
-### ✅ 해결
+### 해결
 
 Bean을 직접 만들어 **UTF-8 + Custom ObjectMapper**를 적용했다.
 
@@ -55,7 +55,7 @@ public RestTemplate restTemplate(@Qualifier("customObjectMapper") ObjectMapper c
 
 ---
 
-### 🎉 효과
+### 효과
 
 - 모든 API 호출에서 **한글 깨짐 사라짐**
 - JSON 변환 시 **Custom ObjectMapper 설정 반영됨**
