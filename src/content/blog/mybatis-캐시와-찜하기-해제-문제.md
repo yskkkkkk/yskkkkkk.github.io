@@ -93,16 +93,16 @@ MyBatis 매퍼 XML에 `flushCache="true"` 옵션을 추가하여 캐시를 무�
 <select id="vodGoods" resultMap="vodGoodsResultMap" flushCache="true">
 ```
 
-- 데이터는 바로 반영됨! ✅
-- 하지만 API 호출량이 하루 150만 건 이상이라 캐시를 무효화하면 DB 부하가 심각해짐. ❌
+- 데이터는 바로 반영됨.
+- 하지만 API 호출량이 하루 150만 건 이상이라 캐시를 무효화하면 DB 부하가 심각해짐.
 - 결국 이 방법은 포기.
 
 ### 2차 시도: resultMap에서 wishYn 제거
 
 MyBatis에서 resultMap 단위로 캐싱된다는 점을 참고하여 resultMap에서 `wishYn`을 제거했다.
 
-- 여전히 `wishYn`이 정상적으로 반환됨. 🤔
-- 즉, 이 방법도 캐시 문제 해결에 도움되지 않음. ❌
+- 여전히 `wishYn`이 정상적으로 반환됨.
+- 즉, 이 방법도 캐시 문제 해결에 도움되지 않음.
 
 ### 최종 해결 방법
 
@@ -122,7 +122,7 @@ for (VodGoodsVO vodGoods : vodGoodsList) {
 ```
 
 - 캐시된 데이터가 `wishYn = 1` 상태라면 기본값을 `0`으로 초기화한 후 다시 세팅하는 방식.
-- 캐시를 유지하면서도 찜하기 해제 후 데이터를 정상적으로 보정할 수 있음. ✅
+- 캐시를 유지하면서도 찜하기 해제 후 데이터를 정상적으로 보정할 수 있음.
 
 ---
 
