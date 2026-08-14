@@ -7,7 +7,7 @@ tags: ["redis", "caffeine", "pubsub", "cache", "java", "backend"]
 heroImage: ""
 ---
 
-### 🤦 문제 발생
+### 문제 발생
 
 서비스 구조상 **로컬 Caffeine 캐시 + Redis 캐시**를 병합해서 사용했는데, 데이터 정합성 문제가 자꾸 발생했다.
 
@@ -19,7 +19,7 @@ heroImage: ""
 
 ---
 
-### 🔍 원인 파악
+### 원인 파악
 
 - Caffeine은 로컬 JVM 내에서만 동작 → 다른 서버와 캐시 동기화 불가
 - Redis는 중앙 집중 캐시라서 값이 최신이지만, 로컬 Caffeine은 그대로 남아 있음
@@ -27,7 +27,7 @@ heroImage: ""
 
 ---
 
-### ✅ 해결
+### 해결
 
 Redis Pub/Sub을 이용해 **캐시 무효화 이벤트**를 모든 서버에 전파했다.
 
@@ -83,7 +83,7 @@ private void onInvalidate(String key) {
 
 ---
 
-### 🎉 효과 / 깨달음
+### 효과 / 깨달음
 
 - 로컬 캐시(Caffeine)와 Redis 캐시의 데이터 정합성을 유지할 수 있게 됐다.
 - 서버 인스턴스 3대 모두에서 **동시에 캐시 무효화**가 반영된다.
