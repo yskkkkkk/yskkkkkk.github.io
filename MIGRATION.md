@@ -25,6 +25,9 @@
   - 이미지 포함 파일 23개에 `<!-- TODO: migrate images -->` 주석 있음
 - [ ] Blogger 포스트 tags 정리 (현재 Blogger 카테고리 그대로 유입됨, 중복/불일치 정리 필요)
 - [ ] 포스트별 `heroImage` 지정 검토 (현재 대부분 빈 값 → `og-default.png`로 폴백 중)
+  - 이미지 생성 시 AI 티 나는 조명(렌즈 플레어·네온 글로우·보케)을 피할 것
+  - 긍정 키워드: flat lighting, overcast sky lighting, matte finish, diffused ambient light, documentary style, low contrast
+  - 부정 키워드: volumetric lighting, lens flare, bloom, neon, cinematic lighting, glowing, bokeh, smooth skin
 
 ---
 
