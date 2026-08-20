@@ -18,6 +18,8 @@ heroImage: ""
 
 처음 딴 스킬 배지는 Develop AI-Powered Prototypes in Google AI Studio 과정이었습니다.
 
+![Google Cloud Develop AI-powered Prototypes in Google AI Studio 스킬 배지](/images/google-ai-studio-skill-badge.png)
+
 Google AI Studio를 직접 써보는 코스였는데, 영상 설명과 실습이 여러 개로 나뉘어 있었습니다. 실습마다 계정이 따로 배정돼서, 랩을 하나 끝낼 때마다 계정을 새로 바꿔 로그인해야 했습니다.
 
 ![구글 스킬스 부스트 실습 계정 목록. 랩마다 계정이 바뀌어서 계속 로그인을 전환했다](/images/study-jam-account-switching.png)
