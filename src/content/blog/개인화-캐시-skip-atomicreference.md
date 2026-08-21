@@ -7,7 +7,7 @@ tags: ["redis", "java", "concurrency", "atomicreference", "backend", "personaliz
 heroImage: ""
 ---
 
-### 🤦 문제 발생
+### 문제 발생
 
 초기에는 개인화 추천 영역 중 일부 모듈을 `shopCode`로 관리해서, properties로 고정 처리하도록 운영했다. 개발 초기에는 안정적이었지만 운영 중 아래 문제가 발생했다.
 
@@ -17,7 +17,7 @@ heroImage: ""
 
 ---
 
-### 🔍 원인 파악
+### 원인 파악
 
 **1. shopCode 기반 예외 관리의 한계**
 
@@ -33,7 +33,7 @@ heroImage: ""
 
 ---
 
-### ✅ 해결
+### 해결
 
 **핵심 아이디어**: `shopCode` 기반 고정 처리를 버리고, `moduleCd` 기반으로 추천 영역의 성격을 판별한다. Redis 사용 여부 판단은 Redis 헬스 체크 응답의 `personalizedContents` 데이터를 통해 동적으로 결정한다.
 
@@ -111,7 +111,7 @@ protected boolean skipRedisCondition(RedisCacheDataVO redisCacheDataVO) {
 
 ---
 
-### 🧪 검증
+### 검증
 
 - `personalizedContentsVal`에 포함된 `mdulCd`/`bnrDspTypeCd`/`gdTypeCd` 필드가 올바른 JSON 배열로 내려오는지 확인했다.
 - CAS로 `AtomicReference`가 안정적으로 갱신되는지 단위 테스트를 작성했다.
@@ -119,7 +119,7 @@ protected boolean skipRedisCondition(RedisCacheDataVO redisCacheDataVO) {
 
 ---
 
-### 🎉 효과 / 깨달음
+### 효과 / 깨달음
 
 - `shopCode` 기반 정적 관리에서 `moduleCd` 기반 동적 판별로 전환하면서, **운영자가 properties를 깜빡해도 안전한 구조**가 됐다.
 - Redis 헬스 응답의 `personalizedContentsVal`을 런타임에 반영하니, 새로운 추천 모듈이 추가돼도 즉시 개인화 여부를 제어할 수 있다.

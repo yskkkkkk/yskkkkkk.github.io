@@ -7,7 +7,7 @@ tags: ["java", "concurrency", "completablefuture", "spring", "backend", "perform
 heroImage: ""
 ---
 
-### 🤦 문제 발생
+### 문제 발생
 
 외부 API 호출, DB 조회, Redis I/O 같은 블로킹 작업을 `CompletableFuture.supplyAsync(...)`로 병렬화했는데, 실행기를 지정하지 않아 `ForkJoinPool.commonPool`을 사용하고 있었다. 당장 장애로 이어진 건 아니었지만, 코드를 점검하는 과정에서 트래픽이 몰리면 문제가 될 수 있는 구조라는 걸 확인했다.
 
@@ -19,7 +19,7 @@ heroImage: ""
 
 ---
 
-### 🔍 원인 파악
+### 원인 파악
 
 - `ForkJoinPool.commonPool`은 **CPU 바운드 작업**에 맞는 풀로, 기본 병렬도는 코어 수 근처다. 블로킹 I/O에는 적합하지 않다.
 - 블로킹이 늘어나면서 워커 스레드가 묶이고, 나머지 태스크는 스케줄링 기회를 잃었다.
@@ -28,7 +28,7 @@ heroImage: ""
 
 ---
 
-### ✅ 해결
+### 해결
 
 CPU와 I/O 실행기를 분리하고, 블로킹 호출은 전용 풀에 태웠다.
 
@@ -78,7 +78,7 @@ Micrometer로 스레드풀 메트릭(`active`, `queue size`, `rejections`)을 �
 
 ---
 
-### 🎉 효과 / 깨달음
+### 효과 / 깨달음
 
 - CPU와 I/O 분리만으로 공용 풀 스타베이션 위험이 사라졌다.
 - 적용 이후 트래픽 스파이크 상황에서도 안정적으로 처리됐다.
