@@ -8,6 +8,21 @@
 
 ---
 
+## 커밋 작성자 설정 (세션 시작 시 필수)
+
+이 저장소는 Claude Code 기본 identity(`Claude <noreply@anthropic.com>`)로 커밋하면
+GitHub 컨트리뷰션 그래프에 하나도 집계되지 않습니다. 원격 컨테이너는 세션마다 새로
+생성되어 이전 설정이 초기화되므로, **작업을 시작하기 전에 매번 아래를 실행합니다.**
+
+```bash
+git config user.name "yskkkkkk"
+git config user.email "fb1014@naver.com"
+```
+
+(`--global`이 아니라 이 저장소에만 적용되는 local 설정입니다. 전역 설정은 건드리지 않습니다.)
+
+---
+
 ## 보류 중인 초안
 
 **새 글 소재를 논의할 때는 아래 목록을 먼저 확인하고, 관련된 항목이 있으면 글쓴이에게 먼저 알립니다.**
