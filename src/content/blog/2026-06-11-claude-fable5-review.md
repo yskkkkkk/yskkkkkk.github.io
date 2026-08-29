@@ -48,7 +48,7 @@ heroImage: ""
 
 `SaveCompositionRequest`의 `imageUrl`, `phrase`, `subjectPosition` 필드에 검증 제약이 전혀 없었습니다. 길이 제한도, `@NotBlank`도 없이 그대로 받고 있었습니다.
 
-보안 HTTP 헤더도 마찬가지였습니다. `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` — 하나도 설정이 안 되어 있었습니다. 혼자 만드는 프로젝트니까 대충 넘겼던 부분인데, 막상 리스트로 뽑히니까 찜찜하더라고요.
+보안 HTTP 헤더도 마찬가지였습니다. `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`까지, 하나도 설정이 안 되어 있었습니다. 혼자 만드는 프로젝트니까 대충 넘겼던 부분인데, 막상 리스트로 뽑히니까 찜찜하더라고요.
 
 ### chaos-drop — XSS, 입력 우회, 성능
 
@@ -78,4 +78,4 @@ heroImage: ""
 
 ## 추가 — 생각보다 빨리 끝났다
 
-글을 쓴 직후 [Anthropic이 Fable Mythos 접근 종료 공지](https://www.anthropic.com/news/fable-mythos-access)를 올렸습니다. 22일까지 실컷 써볼 생각이었는데, 예상보다 빨리 문이 닫혔습니다. 하루 써본 것만으로도 확실히 뭔가 다르다는 느낌이 있었는데 — 더 긴 시간을 두고 검증해보지 못한 게 아쉽습니다. 다음 정식 공개 때 다시 제대로 써볼 기회가 오길 기다려봐야겠습니다.
+글을 쓴 직후 [Anthropic이 Fable Mythos 접근 종료 공지](https://www.anthropic.com/news/fable-mythos-access)를 올렸습니다. 22일까지 실컷 써볼 생각이었는데, 예상보다 빨리 문이 닫혔습니다. 하루 써본 것만으로도 확실히 뭔가 다르다는 느낌이 있었는데, 더 긴 시간을 두고 검증해보지 못한 게 아쉽습니다. 다음 정식 공개 때 다시 제대로 써볼 기회가 오길 기다려봐야겠습니다.
