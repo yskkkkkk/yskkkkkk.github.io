@@ -2,7 +2,7 @@
 title: "spring 과 java 기초 한번 더 잡고 가기"
 pubDate: 2020-11-16
 description: "자바를 단지 도구로만 생각하고 이를 더 잘 쓰는걸 jsp, spring 이라고 생각했는데 오히려 자바에 대해서 알아야 하는게 더 깊고 깊다는걸 배웠다. spring의 근간이 되는 기술인 만큼 다른 기술들에도 적용할 수 있고 java는 내 생각보다 더 엄청난 언어임이 틀"
-tags: ["코딩이야기"]
+tags: []
 series: ""
 heroImage: ""
 draft: false
