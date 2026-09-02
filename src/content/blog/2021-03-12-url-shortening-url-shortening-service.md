@@ -2,7 +2,7 @@
 title: "URL Shortening Algorithm 구현하기(1)"
 pubDate: 2021-03-12
 description: "URL Shortening URL을 입력받아 짧게 줄여주고, Shortening된 URL을 입력하면 원래 URL로 리다이렉트하는 URL Shortening Service 문제를 딱 봤을 때 약간혼란스러움을 느꼈다. 쉬운건가? 어려운건가? 최근에 적용시킨 서비스중에 ur"
-tags: ["코딩이야기"]
+tags: []
 series: ""
 heroImage: ""
 draft: false

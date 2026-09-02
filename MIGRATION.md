@@ -19,11 +19,14 @@
 - [x] 소셜 메타태그 설정 (`BaseHead.astro`의 og/twitter 태그, `og-default.png` 폴백)
 - [x] 검색엔진 등록 (Google Search Console, 네이버 서치어드바이저)
 - [x] 루트의 `convert_blogger.py`·`src/feed.atom` 삭제 (이관 완료 후 불필요, 어디서도 참조되지 않음 확인)
+- [x] Blogger 포스트 tags 정리
+  - "코딩이야기"(15편): 주제를 가리지 않는 무의미한 catch-all 라벨이라 제거 (단독 태그였던 글은 `tags: []`, 다른 태그와 같이 있던 글은 나머지만 유지)
+  - "백기선 live-study"(10편): `series: "백기선 live-study (2020)"`와 완전히 중복이라 태그에서 제거 (series 필드는 그대로 유지)
+  - "ssafy 6기"·"코테 알고리즘"·"실용주의프로그래머"는 series와 중복도 아니고 나름의 의미가 있는 라벨이라 그대로 유지
 
 ## TODO
 - [ ] 이미지 273개 로컬 이전 (Blogger 삭제 전에 처리)
   - 이미지 포함 파일 23개에 `<!-- TODO: migrate images -->` 주석 있음
-- [ ] Blogger 포스트 tags 정리 (현재 Blogger 카테고리 그대로 유입됨, 중복/불일치 정리 필요)
 - [ ] 포스트별 `heroImage` 지정 검토 (현재 대부분 빈 값 → `og-default.png`로 폴백 중)
   - 이미지 생성 시 AI 티 나는 조명(렌즈 플레어·네온 글로우·보케)을 피할 것
   - 긍정 키워드: flat lighting, overcast sky lighting, matte finish, diffused ambient light, documentary style, low contrast

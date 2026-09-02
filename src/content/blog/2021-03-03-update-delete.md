@@ -2,7 +2,7 @@
 title: "update, delete가 너무 무서운 사람"
 pubDate: 2021-03-03
 description: "언뜻 듣기로 update문은 delete을 사용하는것보다 더 위험하기 때문에 사용을 지양해야 한다는 이야기를 본적이 있다. 근데 만들어 놓은 기능을 어떻게 안쓰고만 있겠나. 이걸 이리 저리 사용하는데 좀 새로이 알게된 정보들이 존재한다. 워크벤치에서 다수의 데이터가 나"
-tags: ["코딩이야기"]
+tags: []
 series: ""
 heroImage: ""
 draft: false
