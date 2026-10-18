@@ -4,6 +4,7 @@ description: "해커톤에서 만든 SquatType의 설계를 정리했습니다. 
 pubDate: "2026-10-18"
 tags: ["AI", "Gemini", "해커톤"]
 heroImage: ""
+series: "2026 구글 스터디잼·해커톤"
 ---
 
 [지난 글](/blog/2026-10-17-study-jam-to-hackathon-prep/)에서 이어지는 글입니다.

@@ -30,6 +30,11 @@ export function formatYearMonth(date: Date): string {
 }
 
 export const SERIES_META: Record<string, { slug: string; description: string; heroBg: string }> = {
+  '2026 구글 스터디잼·해커톤': {
+    slug: 'google-2026',
+    description: '2026 하반기 구글 클라우드 스터디 잼으로 시작해, 생애 첫 Google DeepMind 해커톤에서 SquatType을 만들기까지의 기록. 배지를 모으며 익힌 Google Cloud, 해커톤 전 사전 실험, Flash와 Argon을 나눠 쓴 설계, AI 세션 넷과 함께한 하루를 담았습니다.',
+    heroBg: 'linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 55%,#0f766e 100%)',
+  },
   '피카밈 개발기': {
     slug: 'pika-a-meme',
     description: '가벼운 가챠형 밈 서비스 뒤에 실무 수준 백엔드를 의도적으로 설계한 1개월 풀스택 기록. 토이 프로젝트에도 Clean Architecture·DDD를 적용한 이유, 분산 락 기반 하트 동시성 제어, Redis 캐시·Rate Limiting·OAuth2 디버깅까지 기술적 선택과 실패를 솔직하게 담았습니다.',

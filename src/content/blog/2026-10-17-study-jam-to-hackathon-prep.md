@@ -4,6 +4,7 @@ description: "구글 클라우드 스터디 잼이 끝날 무렵 Google DeepMind
 pubDate: "2026-10-17"
 tags: ["회고", "AI", "스터디잼", "해커톤"]
 heroImage: ""
+series: "2026 구글 스터디잼·해커톤"
 ---
 
 스터디 잼이 9월 30일로 끝났습니다.
