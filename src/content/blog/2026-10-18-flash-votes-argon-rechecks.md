@@ -1,9 +1,10 @@
 ---
 title: "Flash는 다섯 번 투표하고, Argon은 갈린 곳만 봅니다"
-description: "해커톤에서 만든 SquatType의 설계를 정리했습니다. 모델은 보기만 하고, 판정은 코드와 사람이 하도록 나눴습니다."
+description: "해커톤에서 만든 SquatType의 설계를 정리했습니다. Flash와 Argon을 어떻게 나눠 썼는지, 판정은 어디서 정하는지 적었습니다."
 pubDate: "2026-10-18"
 tags: ["AI", "Gemini", "해커톤"]
 heroImage: ""
+series: "2026 구글 스터디잼·해커톤"
 ---
 
 [지난 글](/blog/2026-10-17-study-jam-to-hackathon-prep/)에서 이어지는 글입니다.

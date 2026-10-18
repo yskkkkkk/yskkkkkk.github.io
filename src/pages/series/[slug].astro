@@ -121,6 +121,14 @@ const rangeLabel = minDate && maxDate ? `${formatYearMonth(minDate)} – ${forma
         </>
       )}
 
+      {/* ── 2026 구글 스터디잼·해커톤: dots + Gemini glyph ── */}
+      {seriesName === '2026 구글 스터디잼·해커톤' && (
+        <>
+          <div class="hero-pat" style="background-image:radial-gradient(circle,rgba(255,255,255,0.14) 1.4px,transparent 1.4px);background-size:22px 22px;"></div>
+          <div class="hero-glyph" style="font-size:108px;">Gemini</div>
+        </>
+      )}
+
       {/* ── Redis: grid pattern + CACHE glyph ── */}
       {seriesName === 'Redis 프로젝트 회고' && (
         <>

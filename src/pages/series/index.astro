@@ -47,6 +47,16 @@ const seriesList = Object.entries(SERIES_META).map(([name, meta]) => {
         <a href={`/series/${series.slug}`} class="series-card">
           <div class="series-cover">
 
+            {/* ── 2026 구글 스터디잼·해커톤 ── */}
+            {series.name === '2026 구글 스터디잼·해커톤' && (
+              <>
+                <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 55%,#0f766e 100%);"></div>
+                <div class="cv-pat" style="background-image:radial-gradient(circle,rgba(255,255,255,0.14) 1.4px,transparent 1.4px);background-size:22px 22px;"></div>
+                <div class="cv-glyph">Gemini</div>
+                <div class="cv-label">Study Jam · Hackathon</div>
+              </>
+            )}
+
             {/* ── 피카밈 개발기 ── */}
             {series.name === '피카밈 개발기' && (
               <>
