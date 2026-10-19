@@ -5,7 +5,6 @@ pubDate: "2026-10-19"
 tags: ["회고", "AI", "해커톤", "Gemini"]
 heroImage: ""
 series: "2026 구글 스터디잼·해커톤"
-draft: true
 ---
 
 [지난 글](/blog/2026-10-18-flash-votes-argon-rechecks/)에서 SquatType의 설계를 정리했고, 이번 글은 해커톤 당일 이야기입니다.
